@@ -1,5 +1,6 @@
 package com.webLibraryManagementSystem.dao.impl;
 
+import java.sql.Connection;
 import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,9 +12,8 @@ import com.webLibraryManagementSystem.dao.IssueRecordDao;
 import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.domain.IssueRecord;
 import com.webLibraryManagementSystem.utilities.BookAvailability;
-import com.webLibraryManagementSystem.utilities.DBConnection;
+import com.webLibraryManagementSystem.utilities.ConnectionPoolingServlet;
 import com.webLibraryManagementSystem.utilities.IssueStatus;
-import com.webLibraryManagementSystem.utilities.PreparedStatementManager;
 import com.webLibraryManagementSystem.utilities.SQLQueries;
 import com.webLibraryManagementSystemexceptions.InvalidException;
 
@@ -23,10 +23,11 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 	@Override
 	public void issueBook(IssueRecord newIssue, Book book) throws InvalidException {
+		Connection con = null;
 		try {
-
-			DBConnection.SetAutoCommit(false);
-			PreparedStatement stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.ISSUE_INSERT);
+			con = ConnectionPoolingServlet.getDataSource().getConnection();
+			con.setAutoCommit(false);
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.ISSUE_INSERT);
 
 			stmt.setInt(1, newIssue.getBookId());
 			stmt.setInt(2, newIssue.getMemberId());
@@ -37,11 +38,12 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 			bookDaoImpl.updateBookAvalability(book, BookAvailability.ISSUED);
 
-			DBConnection.commit();
-			DBConnection.SetAutoCommit(true);
+			con.commit();
+			con.setAutoCommit(true);
+
 		} catch (SQLException e) {
 			try {
-				DBConnection.rollback();
+				con.rollback();
 				System.out.println(e.getMessage());
 				throw new InvalidException("Issue Book Roll back" + e.getMessage());
 			} catch (SQLException e1) {
@@ -55,9 +57,10 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 	@Override
 	public void returnBook(Book book, int id, LocalDate date) throws InvalidException {
+		Connection con;
 		try {
-
-			PreparedStatement stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.ISSUE_SELECT_RETURN_DATE);
+			con = ConnectionPoolingServlet.getDataSource().getConnection();
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.ISSUE_SELECT_RETURN_DATE);
 
 			stmt.setInt(1, book.getBookId());
 
@@ -83,15 +86,14 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 				throw new InvalidException("Issue record Not Found ");
 			}
 
-			DBConnection.SetAutoCommit(false);
+			con.setAutoCommit(false);
 
 			if (issue.getIssueDate().isAfter(date)) {
 				throw new InvalidException("return date Must be after Issue Date");
 			}
 
 			System.out.println("before update");
-			PreparedStatement stmt1 = PreparedStatementManager
-					.getPreparedStatement(SQLQueries.ISSUE_UPDATE_RETURN_DATE);
+			PreparedStatement stmt1 = con.prepareStatement(SQLQueries.ISSUE_UPDATE_RETURN_DATE);
 			stmt1.setDate(1, Date.valueOf(date));
 			stmt1.setInt(2, issue.getIssueId());
 
@@ -104,12 +106,12 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 			bookDaoImpl.updateBookAvalability(book, BookAvailability.AVAILABLE);
 			System.out.println("after book avail");
-			DBConnection.commit();
-			DBConnection.SetAutoCommit(true);
+			con.commit();
+			con.setAutoCommit(true);
 
 		} catch (SQLException e) {
 			try {
-				DBConnection.rollback();
+				con.rollback();
 				System.out.println(e.getMessage());
 				throw new InvalidException("Issue Book Roll back" + e.getMessage());
 			} catch (SQLException e1) {
@@ -125,8 +127,8 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 	public void issueLog(IssueRecord issue) throws InvalidException {
 		PreparedStatement stmt;
 		try {
-
-			stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.ISSUE_LOG_INSERT);
+			Connection con = ConnectionPoolingServlet.getDataSource().getConnection();
+			stmt = con.prepareStatement(SQLQueries.ISSUE_LOG_INSERT);
 
 			stmt.setInt(1, issue.getIssueId());
 			stmt.setInt(2, issue.getBookId());

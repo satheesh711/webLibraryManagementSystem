@@ -1,5 +1,6 @@
 package com.webLibraryManagementSystem.dao.impl;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -11,6 +12,7 @@ import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.utilities.BookAvailability;
 import com.webLibraryManagementSystem.utilities.BookCategory;
 import com.webLibraryManagementSystem.utilities.BookStatus;
+import com.webLibraryManagementSystem.utilities.ConnectionPoolingServlet;
 import com.webLibraryManagementSystem.utilities.PreparedStatementManager;
 import com.webLibraryManagementSystem.utilities.SQLQueries;
 import com.webLibraryManagementSystemexceptions.InvalidException;
@@ -21,8 +23,8 @@ public class BookDaoImpl implements BookDao {
 	public void addBook(Book book) throws InvalidException {
 
 		try {
-
-			PreparedStatement stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.BOOK_INSERT);
+			Connection con = ConnectionPoolingServlet.getDataSource().getConnection();
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.BOOK_INSERT);
 
 			stmt.setString(1, book.getTitle());
 			stmt.setString(2, book.getAuthor());
@@ -46,7 +48,8 @@ public class BookDaoImpl implements BookDao {
 	public void updateBook(Book book, Book oldBook) throws InvalidException {
 
 		try {
-			PreparedStatement stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.BOOK_UPDATE);
+			Connection con = ConnectionPoolingServlet.getDataSource().getConnection();
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.BOOK_UPDATE);
 
 			stmt.setString(1, book.getTitle());
 			stmt.setString(2, book.getAuthor());
@@ -72,8 +75,8 @@ public class BookDaoImpl implements BookDao {
 	@Override
 	public void updateBookAvalability(Book book, BookAvailability avalability) throws InvalidException {
 		try {
-
-			PreparedStatement stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.BOOK_UPDATE_AVAILABILITY);
+			Connection con = ConnectionPoolingServlet.getDataSource().getConnection();
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.BOOK_UPDATE_AVAILABILITY);
 
 			stmt.setString(1, String.valueOf(avalability.toString().charAt(0)));
 			stmt.setInt(2, book.getBookId());
@@ -98,7 +101,8 @@ public class BookDaoImpl implements BookDao {
 		List<Book> books = new ArrayList<>();
 		PreparedStatement stmt;
 		try {
-			stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.BOOK_SELECT_ALL);
+			Connection con = ConnectionPoolingServlet.getDataSource().getConnection();
+			stmt = con.prepareStatement(SQLQueries.BOOK_SELECT_ALL);
 
 			ResultSet rs = stmt.executeQuery();
 
@@ -128,8 +132,8 @@ public class BookDaoImpl implements BookDao {
 	public boolean getBookByTitleAndAuthor(String title, String author) throws InvalidException {
 		PreparedStatement stmt;
 		try {
-
-			stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.BOOK_SELECT_BY_TITLE_AUTHOR);
+			Connection con = ConnectionPoolingServlet.getDataSource().getConnection();
+			stmt = con.prepareStatement(SQLQueries.BOOK_SELECT_BY_TITLE_AUTHOR);
 			stmt.setString(1, title.trim().toLowerCase());
 			stmt.setString(2, author.trim().toLowerCase());
 
@@ -152,7 +156,8 @@ public class BookDaoImpl implements BookDao {
 	public void deleteBook(Book book) throws InvalidException {
 
 		try {
-			PreparedStatement stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.BOOK_DELETE);
+			Connection con = ConnectionPoolingServlet.getDataSource().getConnection();
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.BOOK_DELETE);
 			stmt.setInt(1, book.getBookId());
 
 			int rowsDeleted = stmt.executeUpdate();
@@ -174,8 +179,8 @@ public class BookDaoImpl implements BookDao {
 	public void bookLog(Book book) throws InvalidException {
 		PreparedStatement stmt;
 		try {
-
-			stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.BOOKS_LOG_INSERT);
+			Connection con = ConnectionPoolingServlet.getDataSource().getConnection();
+			stmt = con.prepareStatement(SQLQueries.BOOKS_LOG_INSERT);
 			stmt.setInt(1, book.getBookId());
 			stmt.setString(2, book.getTitle());
 			stmt.setString(3, book.getAuthor());

@@ -1,5 +1,6 @@
 package com.webLibraryManagementSystem.dao.impl;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -8,8 +9,8 @@ import java.util.List;
 
 import com.webLibraryManagementSystem.dao.MemberDao;
 import com.webLibraryManagementSystem.domain.Member;
+import com.webLibraryManagementSystem.utilities.ConnectionPoolingServlet;
 import com.webLibraryManagementSystem.utilities.MemberGender;
-import com.webLibraryManagementSystem.utilities.PreparedStatementManager;
 import com.webLibraryManagementSystem.utilities.SQLQueries;
 import com.webLibraryManagementSystemexceptions.InvalidException;
 
@@ -17,9 +18,10 @@ public class MemberDaoImpl implements MemberDao {
 
 	@Override
 	public int RegisterMember(Member member) throws InvalidException {
+		Connection con;
 		try {
-
-			PreparedStatement stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.MEMBER_INSERT);
+			con = ConnectionPoolingServlet.getDataSource().getConnection();
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.MEMBER_INSERT);
 
 			stmt.setString(1, member.getName());
 			stmt.setString(2, member.getEmail());
@@ -43,9 +45,10 @@ public class MemberDaoImpl implements MemberDao {
 	@Override
 	public boolean getMemberByMobile(Long mobile) throws InvalidException {
 		PreparedStatement stmt;
+		Connection con;
 		try {
-
-			stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.MEMBER_SELECT_BY_MOBILE);
+			con = ConnectionPoolingServlet.getDataSource().getConnection();
+			stmt = con.prepareStatement(SQLQueries.MEMBER_SELECT_BY_MOBILE);
 			stmt.setLong(1, mobile);
 
 			ResultSet rs = stmt.executeQuery();
@@ -65,9 +68,10 @@ public class MemberDaoImpl implements MemberDao {
 	@Override
 	public boolean getMemberByEmail(String email) throws InvalidException {
 		PreparedStatement stmt;
+		Connection con;
 		try {
-
-			stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.MEMBER_SELECT_BY_EMAIL);
+			con = ConnectionPoolingServlet.getDataSource().getConnection();
+			stmt = con.prepareStatement(SQLQueries.MEMBER_SELECT_BY_EMAIL);
 			stmt.setString(1, email);
 
 			ResultSet rs = stmt.executeQuery();
@@ -86,10 +90,10 @@ public class MemberDaoImpl implements MemberDao {
 
 	@Override
 	public int UpdateMember(Member member, Member oldMember) throws InvalidException {
-
+		Connection con;
 		try {
-
-			PreparedStatement stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.MEMBER_UPDATE);
+			con = ConnectionPoolingServlet.getDataSource().getConnection();
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.MEMBER_UPDATE);
 
 			stmt.setString(1, member.getName());
 			stmt.setString(2, member.getEmail());
@@ -117,8 +121,10 @@ public class MemberDaoImpl implements MemberDao {
 	public List<Member> getAllMembers() throws InvalidException {
 
 		List<Member> members = new ArrayList<>();
+		Connection con;
 		try {
-			PreparedStatement stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.SELECT_ALL_MEMBERS);
+			con = ConnectionPoolingServlet.getDataSource().getConnection();
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.SELECT_ALL_MEMBERS);
 			ResultSet rs = stmt.executeQuery();
 
 			while (rs.next()) {
@@ -138,9 +144,10 @@ public class MemberDaoImpl implements MemberDao {
 
 	@Override
 	public int deleteMember(Member memberData) throws InvalidException {
-
+		Connection con;
 		try {
-			PreparedStatement stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.MEMBER_DELETE);
+			con = ConnectionPoolingServlet.getDataSource().getConnection();
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.MEMBER_DELETE);
 			stmt.setInt(1, memberData.getMemberId());
 
 			int rowsDeleted = stmt.executeUpdate();
@@ -163,9 +170,10 @@ public class MemberDaoImpl implements MemberDao {
 	@Override
 	public void memberLog(Member member) throws InvalidException {
 		PreparedStatement stmt;
+		Connection con;
 		try {
-
-			stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.MEMBERS_LOG_INSERT);
+			con = ConnectionPoolingServlet.getDataSource().getConnection();
+			stmt = con.prepareStatement(SQLQueries.MEMBERS_LOG_INSERT);
 			stmt.setInt(1, member.getMemberId());
 			stmt.setString(2, member.getName());
 			stmt.setString(3, member.getEmail());
