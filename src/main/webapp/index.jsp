@@ -4,13 +4,13 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>Library Dashboard</title>
+<title>Library</title>
 <link rel="stylesheet" href="css/dashboard.css">
 </head>
 <body>
 
 	<div class="sidebar">
-		<h2>📚 Library Dashboard</h2>
+		<h2>📚 Library </h2>
 
 		<div class="menu-item">
 			<div class="menu-title" onclick="toggleSubMenu('bookMenu', this)">

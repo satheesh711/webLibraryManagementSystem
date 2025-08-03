@@ -13,7 +13,6 @@ import com.webLibraryManagementSystem.utilities.BookAvailability;
 import com.webLibraryManagementSystem.utilities.BookCategory;
 import com.webLibraryManagementSystem.utilities.BookStatus;
 import com.webLibraryManagementSystem.utilities.ConnectionPoolingServlet;
-import com.webLibraryManagementSystem.utilities.PreparedStatementManager;
 import com.webLibraryManagementSystem.utilities.SQLQueries;
 import com.webLibraryManagementSystemexceptions.InvalidException;
 
@@ -282,9 +281,10 @@ public class BookDaoImpl implements BookDao {
 	public Book getBookById(int id) throws InvalidException {
 		Book book = null;
 		PreparedStatement stmt;
+		Connection con;
 		try {
-
-			stmt = PreparedStatementManager.getPreparedStatement(SQLQueries.BOOK_SELECT_BY_ID);
+			con = ConnectionPoolingServlet.getDataSource().getConnection();
+			stmt = con.prepareStatement(SQLQueries.BOOK_SELECT_BY_ID);
 			stmt.setInt(1, id);
 
 			ResultSet rs = stmt.executeQuery();

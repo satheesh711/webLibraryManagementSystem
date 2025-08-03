@@ -57,7 +57,7 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 	@Override
 	public void returnBook(Book book, int id, LocalDate date) throws InvalidException {
-		Connection con;
+		Connection con = null;
 		try {
 			con = ConnectionPoolingServlet.getDataSource().getConnection();
 			PreparedStatement stmt = con.prepareStatement(SQLQueries.ISSUE_SELECT_RETURN_DATE);
