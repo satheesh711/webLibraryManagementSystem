@@ -92,15 +92,7 @@
 
 <div class="main-pane">
 
-    <!-- Navigation Buttons -->
-    <div class="nav-buttons">
-        <form action="MembersServlet" method="get">
-            <button type="submit" class="nav-button">Back</button>
-        </form>
-        <form action="HomeServlet" method="get">
-            <button type="submit" class="nav-button">Home</button>
-        </form>
-    </div>
+   
 
     <!-- Title -->
     <div class="title-label">Member Registration</div>
