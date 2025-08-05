@@ -1,8 +1,10 @@
 package com.webLibraryManagementSystem.dao;
 
 import java.util.List;
+import java.util.Map;
 
 import com.webLibraryManagementSystem.domain.Book;
+import com.webLibraryManagementSystem.domain.CustomActiveIssuedBooks;
 import com.webLibraryManagementSystem.utilities.BookAvailability;
 import com.webLibraryManagementSystemexceptions.InvalidException;
 
@@ -24,10 +26,10 @@ public interface BookDao {
 
 	Book getBookById(int id) throws InvalidException;
 
-//	List<CustomCategoryCount> getBookCountByCategory() throws InvalidException;
-//
-//	List<CustomActiveIssuedBooks> getActiveIssuedBooks() throws InvalidException;
-//
-//	List<CustomOverDueBooks> getOverDueBooks() throws InvalidException;
+	Map<String, Integer> getBookCountByCategory() throws InvalidException;
+
+	List<CustomActiveIssuedBooks> getActiveIssuedBooks() throws InvalidException;
+
+	List<CustomActiveIssuedBooks> getOverDueBooks() throws InvalidException;
 
 }

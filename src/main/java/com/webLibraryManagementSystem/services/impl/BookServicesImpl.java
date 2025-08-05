@@ -1,10 +1,12 @@
 package com.webLibraryManagementSystem.services.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import com.webLibraryManagementSystem.dao.BookDao;
 import com.webLibraryManagementSystem.dao.impl.BookDaoImpl;
 import com.webLibraryManagementSystem.domain.Book;
+import com.webLibraryManagementSystem.domain.CustomActiveIssuedBooks;
 import com.webLibraryManagementSystem.services.BookServices;
 import com.webLibraryManagementSystem.utilities.BookAvailability;
 import com.webLibraryManagementSystem.utilities.Validations;
@@ -92,22 +94,27 @@ public class BookServicesImpl implements BookServices {
 
 	}
 
-//	@Override
-//	public List<CustomCategoryCount> getBookCountByCategory() throws InvalidException {
-//
-//		return bookDao.getBookCountByCategory();
-//	}
-//
-//	@Override
-//	public List<CustomActiveIssuedBooks> getActiveIssuedBooks() throws InvalidException {
-//
-//		return bookDao.getActiveIssuedBooks();
-//	}
-//
-//	@Override
-//	public List<CustomOverDueBooks> getOverDueBooks() throws InvalidException {
-//
-//		return bookDao.getOverDueBooks();
-//	}
+	@Override
+	public Book getBookById(int bookId) throws InvalidException {
+		return bookDao.getBookById(bookId);
+	}
+
+	@Override
+	public Map<String, Integer> getBookCountByCategory() throws InvalidException {
+
+		return bookDao.getBookCountByCategory();
+	}
+
+	@Override
+	public List<CustomActiveIssuedBooks> getActiveIssuedBooks() throws InvalidException {
+
+		return bookDao.getActiveIssuedBooks();
+	}
+
+	@Override
+	public List<CustomActiveIssuedBooks> getOverDueBooks() throws InvalidException {
+
+		return bookDao.getOverDueBooks();
+	}
 
 }

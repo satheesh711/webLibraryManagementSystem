@@ -29,17 +29,31 @@ public class ConnectionPoolingServlet extends HttpServlet {
 			System.out.println("Connection Pool Created Succesfully...");
 		} catch (NamingException | ClassNotFoundException e) {
 
-			System.out.println("Connection Pool Creation Failed...");
+			System.out.println("Connection Pool Creation Failed..." + e);
 		}
 
 	}
 
 	public static DataSource getDataSource() {
+
 		return ConnectionPoolingServlet.dataSource;
 	}
 
 	public ConnectionPoolingServlet() {
 		super();
+	}
+
+	@Override
+	public void destroy() {
+
+		if (dataSource instanceof DataSource) {
+			try {
+				((Context) dataSource).close();
+				System.out.println("Connection Pool Closed Successfully.");
+			} catch (Exception e) {
+				System.out.println("Error while closing connection pool: " + e);
+			}
+		}
 	}
 
 	@Override
