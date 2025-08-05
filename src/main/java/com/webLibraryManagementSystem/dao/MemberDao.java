@@ -21,4 +21,6 @@ public interface MemberDao {
 
 	boolean getMemberByEmail(String email) throws InvalidException;
 
+	Member getMemberId(int memberId) throws InvalidException;
+
 }

@@ -1,11 +1,8 @@
 package com.webLibraryManagementSystem.controllers;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.webLibraryManagementSystem.domain.Member;
-import com.webLibraryManagementSystem.services.MemberService;
 import com.webLibraryManagementSystem.services.impl.MemberServiceImpl;
 import com.webLibraryManagementSystemexceptions.InvalidException;
 
@@ -16,24 +13,34 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/MembersViewAllServlet")
-public class MembersViewAllServlet extends HttpServlet {
-
+/**
+ * Servlet implementation class DeleteMember
+ */
+@WebServlet("/DeleteMember")
+public class DeleteMemberServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private final MemberService memberService = new MemberServiceImpl();
+
+	public DeleteMemberServlet() {
+		super();
+	}
+
+	MemberServiceImpl memberService = new MemberServiceImpl();
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		List<Member> members;
+		int memberId = Integer.parseInt(request.getParameter("memberId"));
 		try {
-			members = new ArrayList<>(memberService.getMembers());
-			request.setAttribute("members", members);
-			RequestDispatcher dispatcher = request.getRequestDispatcher("viewMembers.jsp");
-			dispatcher.forward(request, response);
+			Member member = memberService.getMemberId(memberId);
+			memberService.deleteMember(member);
+			request.setAttribute("message", member.getName() + "deleted Successfully");
+
 		} catch (InvalidException e) {
-			e.printStackTrace();
+			request.setAttribute("message", e.getMessage());
 		}
+
+		RequestDispatcher dispatcher = request.getRequestDispatcher("MembersViewAllServlet");
+		dispatcher.forward(request, response);
 
 	}
 

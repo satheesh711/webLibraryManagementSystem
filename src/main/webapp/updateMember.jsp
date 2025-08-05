@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"
          import="java.util.List,com.webLibraryManagementSystem.domain.Member" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <!DOCTYPE html>
 <html>
 <head>
@@ -10,28 +11,30 @@
     <style>
         .background-pane {
             width: 654px;
-            height: 460px;
             margin: 50px auto;
             padding: 20px;
             background-color: #f0f0f0;
             border-radius: 10px;
-            position: relative;
         }
         .title-label {
             font-size: 24px;
             font-weight: bold;
-            display: block;
             text-align: center;
             margin-bottom: 10px;
         }
         .error-label {
-            font-family: 'Times New Roman', serif;
             font-weight: bold;
             color: red;
-            font-size: 18px;
             text-align: center;
             display: block;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
+        }
+        .success-label {
+            font-weight: bold;
+            color: green;
+            text-align: center;
+            display: block;
+            margin-bottom: 10px;
         }
         .form-container {
             width: 100%;
@@ -60,7 +63,6 @@
             border: none;
             border-radius: 5px;
             cursor: pointer;
-            font-style: italic;
             font-size: 16px;
         }
         .submit-button:hover {
@@ -70,69 +72,87 @@
 </head>
 <body>
     <div class="background-pane">
-        <!-- Title -->
         <label class="title-label">UPDATE MEMBER</label>
 
-        <!-- Error Label -->
-        <label class="error-label">
-            <%= request.getAttribute("errorMessage") != null ? request.getAttribute("errorMessage") : "" %>
-        </label>
+        <c:if test="${not empty errorMessage}">
+            <span class="error-label">${errorMessage}</span>
+        </c:if>
+        <c:if test="${not empty successMessage}">
+            <span class="success-label">${successMessage}</span>
+        </c:if>
 
-        <!-- Form Start -->
-        <form action="UpdateMemberServlet" method="post" class="form-container">
+        <form action="MemberUpdateServlet" method="post" class="form-container">
 
             <div class="form-row">
                 <label class="form-label">Select Member:</label>
-                <select name="memberId" class="combo-box" required>
+                <select name="memberId" class="combo-box" id="memberId" onchange="fillMemberData()" required>
                     <option value="" disabled selected>Select Member</option>
-                    <%
-                        @SuppressWarnings("unchecked")
-                        List<com.webLibraryManagementSystem.domain.Member> membersList = 
-                            (List<com.webLibraryManagementSystem.domain.Member>) request.getAttribute("membersList");
-                        if(membersList != null){
-                            for(com.webLibraryManagementSystem.domain.Member member : membersList){
-                    %>
-                        <option value="<%= member.getMemberId() %>"><%= member.getName() %></option>
-                    <%
-                            }
-                        }
-                    %>
+                    <c:forEach var="m" items="${membersList}">
+                        <option value="${m.memberId}"
+                                data-name="${m.name}"
+                                data-email="${m.email}"
+                                data-mobile="${m.mobile}"
+                                data-gender="${m.gender}"
+                                data-address="${m.address}">
+                            ${m.name} (${m.email})
+                        </option>
+                    </c:forEach>
                 </select>
             </div>
 
             <div class="form-row">
                 <label class="form-label">Name:</label>
-                <input type="text" name="name" class="text-field" id="name" disabled>
+                <input type="text" name="name" class="text-field" id="name" disabled required>
             </div>
 
             <div class="form-row">
                 <label class="form-label">Email:</label>
-                <input type="email" name="email" class="text-field" id="email" disabled>
+                <input type="email" name="email" class="text-field" id="email" disabled required>
             </div>
 
             <div class="form-row">
                 <label class="form-label">Mobile:</label>
-                <input type="text" name="mobile" class="text-field" id="mobile" disabled>
+                <input type="text" name="mobile" class="text-field" id="mobile" disabled required>
             </div>
 
             <div class="form-row">
                 <label class="form-label">Gender:</label>
-                <select name="gender" class="combo-box" id="gender" disabled>
+                <select name="gender" class="combo-box" id="gender" disabled required>
                     <option value="" disabled selected>Select Gender</option>
-                    <option value="Male">Male</option>
-                    <option value="Female">Female</option>
-                    <option value="Other">Other</option>
+                    <option value="MALE">Male</option>
+                    <option value="FEMALE">Female</option>
+                    <option value="OTHER">Other</option>
                 </select>
             </div>
 
             <div class="form-row">
                 <label class="form-label">Address:</label>
-                <input type="text" name="address" class="text-field" id="address" disabled>
+                <input type="text" name="address" class="text-field" id="address" disabled required>
             </div>
 
-            <!-- Submit Button -->
             <button type="submit" class="submit-button">UPDATE</button>
         </form>
     </div>
+
+    <script>
+        function fillMemberData() {
+            const dropdown = document.getElementById("memberId");
+            const selectedOption = dropdown.options[dropdown.selectedIndex];
+
+            if (selectedOption && selectedOption.value !== "") {
+                document.getElementById("name").value = selectedOption.dataset.name || "";
+                document.getElementById("email").value = selectedOption.dataset.email || "";
+                document.getElementById("mobile").value = selectedOption.dataset.mobile || "";
+                document.getElementById("gender").value = selectedOption.dataset.gender || "";
+                document.getElementById("address").value = selectedOption.dataset.address || "";
+
+                document.getElementById("name").disabled = false;
+                document.getElementById("email").disabled = false;
+                document.getElementById("mobile").disabled = false;
+                document.getElementById("gender").disabled = false;
+                document.getElementById("address").disabled = false;
+            }
+        }
+    </script>
 </body>
 </html>

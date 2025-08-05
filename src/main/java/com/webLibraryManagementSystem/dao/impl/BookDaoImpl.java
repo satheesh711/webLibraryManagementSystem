@@ -80,13 +80,14 @@ public class BookDaoImpl implements BookDao {
 
 			stmt.setString(1, String.valueOf(avalability.toString().charAt(0)));
 			stmt.setInt(2, book.getBookId());
-
+			System.out.println("above");
 			int rowsUpdated = stmt.executeUpdate();
 
 			if (rowsUpdated <= 0) {
 
 				throw new InvalidException("Book Avalability not updated.");
 			}
+			System.out.println("hereerer");
 			bookLog(book);
 
 		} catch (SQLException e) {

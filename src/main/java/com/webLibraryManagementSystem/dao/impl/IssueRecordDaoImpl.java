@@ -24,10 +24,10 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 	@Override
 	public void issueBook(IssueRecord newIssue, Book book) throws InvalidException {
 		Connection con = null;
+		PreparedStatement stmt = null;
 		try {
 			con = ConnectionPoolingServlet.getDataSource().getConnection();
-			con.setAutoCommit(false);
-			PreparedStatement stmt = con.prepareStatement(SQLQueries.ISSUE_INSERT);
+			stmt = con.prepareStatement(SQLQueries.ISSUE_INSERT);
 
 			stmt.setInt(1, newIssue.getBookId());
 			stmt.setInt(2, newIssue.getMemberId());
@@ -38,17 +38,16 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 			bookDaoImpl.updateBookAvalability(book, BookAvailability.ISSUED);
 
-			con.commit();
-			con.setAutoCommit(true);
-
 		} catch (SQLException e) {
-			try {
-				con.rollback();
-				System.out.println(e.getMessage());
-				throw new InvalidException("Issue Book Roll back" + e.getMessage());
-			} catch (SQLException e1) {
+			System.out.println(e.getMessage());
+			throw new InvalidException("Issue Book Roll back" + e.getMessage());
 
-				throw new InvalidException("Error in Server");
+		} finally {
+			try {
+				con.close();
+				stmt.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
 			}
 
 		}
@@ -86,8 +85,6 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 				throw new InvalidException("Issue record Not Found ");
 			}
 
-			con.setAutoCommit(false);
-
 			if (issue.getIssueDate().isAfter(date)) {
 				throw new InvalidException("return date Must be after Issue Date");
 			}
@@ -99,25 +96,17 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 			stmt1.executeUpdate();
 
-			System.out.println("herererer");
+//			System.out.println("herererer");
 
 			issueLog(issue);
 			System.out.println("after log");
 
 			bookDaoImpl.updateBookAvalability(book, BookAvailability.AVAILABLE);
 			System.out.println("after book avail");
-			con.commit();
-			con.setAutoCommit(true);
 
 		} catch (SQLException e) {
-			try {
-				con.rollback();
-				System.out.println(e.getMessage());
-				throw new InvalidException("Issue Book Roll back" + e.getMessage());
-			} catch (SQLException e1) {
-
-				throw new InvalidException("Error in Server");
-			}
+			System.out.println(e.getMessage());
+			throw new InvalidException("Issue Book Roll back" + e.getMessage());
 
 		}
 

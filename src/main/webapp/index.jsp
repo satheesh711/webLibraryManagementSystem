@@ -31,8 +31,8 @@
 			</div>
 			<div class="submenu" id="memberMenu">
 				<a href="registerMember.jsp" target="contentFrame">📝 Register
-					Member</a> <a href="updateMember.jsp" target="contentFrame">✏️
-					Update Member</a> <a href="viewMembers.jsp" target="contentFrame">👥
+					Member</a> <a href="MemberUpdateServlet" target="contentFrame">✏️
+					Update Member</a> <a href="MembersViewAllServlet" target="contentFrame">👥
 					View All Members</a>
 			</div>
 		</div>
@@ -43,7 +43,7 @@
 				<span class="arrow">▶</span> 🔁Issue and Return
 			</div>
 			<div class="submenu" id="issueReturnMenu">
-				<a href="issueBook.jsp" target="contentFrame">📤 Issue Book</a> <a
+				<a href="IssueBookServlet" target="contentFrame">📤 Issue Book</a> <a
 					href="returnBook.jsp" target="contentFrame">📥 Return Book</a>
 			</div>
 		</div>

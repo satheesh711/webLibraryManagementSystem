@@ -193,4 +193,29 @@ public class MemberDaoImpl implements MemberDao {
 		}
 
 	}
+
+	@Override
+	public Member getMemberId(int memberId) throws InvalidException {
+		Member member = null;
+		Connection con;
+		try {
+			con = ConnectionPoolingServlet.getDataSource().getConnection();
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.MEMBER_SELECT_BY_ID);
+			stmt.setInt(1, memberId);
+			ResultSet rs = stmt.executeQuery();
+
+			while (rs.next()) {
+				MemberGender gender = rs.getString("gender").equalsIgnoreCase("F") ? MemberGender.FEMALE
+						: MemberGender.MALE;
+				member = new Member(rs.getInt("member_id"), rs.getString("name"), rs.getString("email"),
+						rs.getLong("mobile"), gender, rs.getString("address"));
+
+			}
+
+		} catch (SQLException e) {
+			throw new InvalidException("Error in Server" + e.getMessage());
+		}
+
+		return member;
+	}
 }
