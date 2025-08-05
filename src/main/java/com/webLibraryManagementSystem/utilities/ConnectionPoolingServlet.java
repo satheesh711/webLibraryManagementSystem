@@ -22,7 +22,7 @@ public class ConnectionPoolingServlet extends HttpServlet {
 	@Override
 	public void init(ServletConfig config) throws ServletException {
 		try {
-			Class.forName("com.mysql.jdbc.Driver");
+			Class.forName("com.mysql.cj.jdbc.Driver");
 			InitialContext initialContext = new InitialContext();
 			Context envContext = (Context) initialContext.lookup("java:comp/env");
 			dataSource = (DataSource) envContext.lookup("lms");
