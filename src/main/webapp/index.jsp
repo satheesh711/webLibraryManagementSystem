@@ -17,12 +17,11 @@
 				<span class="arrow">▶</span> 📖 Book
 			</div>
 			<div class="submenu" id="bookMenu">
-				<a href="addBook.jsp" target="contentFrame">➕ Add Book</a> <a
-					href="updateBook.jsp" target="contentFrame">✏️ Update Book</a> <a
-					href="updateAvailability.jsp" target="contentFrame">📦 Update
+				<a href="addBook" target="contentFrame">➕ Add Book</a> 
+				<a href="updateBook" target="contentFrame">✏️ Update Book</a> 
+				<a href="updateAvailability" target="contentFrame">📦 Update
 					Availability</a> 
-				<a href="viewBooks.jsp" target="contentFrame">📘
-					View All Books</a>
+				<a href="viewBooks" target="contentFrame">📘 View All Books</a>
 			</div>
 		</div>
 
@@ -41,7 +40,7 @@
 		<div class="menu-item">
 			<div class="menu-title"
 				onclick="toggleSubMenu('issueReturnMenu', this)">
-				<span class="arrow">▶</span> 🔁 Issue & Return
+				<span class="arrow">▶</span> 🔁Issue and Return
 			</div>
 			<div class="submenu" id="issueReturnMenu">
 				<a href="issueBook.jsp" target="contentFrame">📤 Issue Book</a> <a
@@ -54,9 +53,9 @@
 				<span class="arrow">▶</span> 📊 Reports
 			</div>
 			<div class="submenu" id="reportsMenu">
-				<a href="booksByCategory.jsp" target="contentFrame">📚 Books by
-					Category</a> <a href="activeMembers.jsp" target="contentFrame">✅
-					Active Members</a> <a href="overdueBooks.jsp" target="contentFrame">⏰
+				<a href="booksByCategory" target="contentFrame">📚 Books by
+					Category</a> <a href="activeMembers" target="contentFrame">✅
+					Active Members</a> <a href="overdueBooks" target="contentFrame">⏰
 					Overdue Books</a>
 			</div>
 		</div>
