@@ -29,4 +29,6 @@ wtpwebapps/
 # User-specific or sensitive files
 # Example: configuration files with sensitive data
 # application.properties.local
+ 
 # .env
+ 
