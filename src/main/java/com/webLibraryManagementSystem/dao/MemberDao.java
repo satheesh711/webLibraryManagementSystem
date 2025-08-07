@@ -1,5 +1,7 @@
 package com.webLibraryManagementSystem.dao;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.List;
 
 import com.webLibraryManagementSystem.domain.Member;
@@ -13,7 +15,7 @@ public interface MemberDao {
 
 	List<Member> getAllMembers() throws InvalidException;
 
-	public void memberLog(Member member) throws InvalidException;
+	public void memberLog(Member member, Connection con, PreparedStatement stmt) throws InvalidException;
 
 	int deleteMember(Member memberData) throws InvalidException;
 

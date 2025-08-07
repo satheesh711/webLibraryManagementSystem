@@ -1,6 +1,8 @@
 package com.webLibraryManagementSystem.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.webLibraryManagementSystem.domain.Member;
@@ -24,9 +26,23 @@ public class MemberUpdateServlet extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		if (request.getParameter("methodforward") == "post") {
-			doPost(request, response);
+
+		String memberIdParam = request.getParameter("memberId");
+		if (memberIdParam != null && !memberIdParam.isEmpty()) {
+
+			try {
+				int memberId = Integer.parseInt(memberIdParam);
+				Member selectedMember = memberService.getMemberId(memberId);
+				loadSelectedMember(request, selectedMember);
+
+			} catch (InvalidException e) {
+				request.setAttribute("errorMessage", e.getMessage());
+			} catch (NumberFormatException e1) {
+				request.setAttribute("errorMessage", "invalid MemberId");
+			}
+
 		}
+
 		loadMembers(request);
 		request.getRequestDispatcher("updateMember.jsp").forward(request, response);
 	}
@@ -36,13 +52,6 @@ public class MemberUpdateServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		String memberIdParam = request.getParameter("memberId");
-		if (memberIdParam == null || memberIdParam.isEmpty()) {
-			request.setAttribute("errorMessage", "Please select a member first");
-			loadMembers(request);
-			request.getRequestDispatcher("updateMember.jsp").forward(request, response);
-			return;
-		}
-
 		int memberId = Integer.parseInt(memberIdParam);
 		String name = request.getParameter("name");
 		String email = request.getParameter("email");
@@ -55,7 +64,7 @@ public class MemberUpdateServlet extends HttpServlet {
 				? MemberGender.valueOf(request.getParameter("gender"))
 				: null;
 		String address = request.getParameter("address");
-
+		Member newMember = null;
 		try {
 			List<Member> membersList = memberService.getMembers();
 			Member oldMember = membersList.stream().filter(m -> m.getMemberId() == memberId).findFirst().orElse(null);
@@ -63,31 +72,50 @@ public class MemberUpdateServlet extends HttpServlet {
 			if (oldMember == null) {
 				request.setAttribute("errorMessage", "Member not found");
 			} else {
-				Member newMember = new Member(memberId, name, email, mobile, gender, address);
+				newMember = new Member(memberId, name, email, mobile, gender, address);
 				if (!newMember.equals(oldMember)) {
 					memberService.updateMember(newMember, oldMember);
 					request.setAttribute("successMessage", oldMember.getName() + " updated successfully.");
+					loadMembers(request);
+					request.getRequestDispatcher("updateMember.jsp").forward(request, response);
+					return;
 				} else {
 					request.setAttribute("errorMessage", "Please edit at least one field before updating.");
 				}
 			}
 
-			request.setAttribute("membersList", membersList);
 		} catch (InvalidException e) {
 			request.setAttribute("errorMessage", e.getMessage());
-			loadMembers(request);
+
 		}
 
-		doGet(request, response);
+		loadSelectedMember(request, newMember);
+		loadMembers(request);
+		request.getRequestDispatcher("updateMember.jsp").forward(request, response);
 	}
 
 	private void loadMembers(HttpServletRequest request) {
 		try {
+
 			List<Member> membersList = memberService.getMembers();
 			request.setAttribute("membersList", membersList);
+
 		} catch (InvalidException e) {
-			System.out.println("here");
+
 			request.setAttribute("errorMessage", e.getMessage());
 		}
+	}
+
+	private void loadSelectedMember(HttpServletRequest request, Member member) {
+
+		request.setAttribute("name", member.getName());
+		request.setAttribute("email", member.getEmail());
+		request.setAttribute("mobile", member.getMobile());
+		request.setAttribute("genderSelected", member.getGender());
+		request.setAttribute("address", member.getAddress());
+		request.setAttribute("memberIdSet", member.getMemberId());
+
+		List<MemberGender> gendersList = new ArrayList<>(Arrays.asList(MemberGender.values()));
+		request.setAttribute("genderList", gendersList);
 	}
 }

@@ -1,6 +1,9 @@
 package com.webLibraryManagementSystem.controllers;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import com.webLibraryManagementSystem.domain.Member;
 import com.webLibraryManagementSystem.services.MemberService;
@@ -27,6 +30,13 @@ public class RegisterMemberServlet extends HttpServlet {
 	}
 
 	@Override
+	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+		List<MemberGender> gendersList = new ArrayList<>(Arrays.asList(MemberGender.values()));
+		req.setAttribute("genderList", gendersList);
+		req.getRequestDispatcher("registerMember.jsp").forward(req, resp);
+	}
+
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
@@ -38,27 +48,35 @@ public class RegisterMemberServlet extends HttpServlet {
 		String address = request.getParameter("address");
 
 		Member member = new Member(-1, name, email, mobile, gender, address);
-		member.setName(name);
-		member.setEmail(email);
-		member.setMobile(mobile);
-		member.setGender(gender);
-		member.setAddress(address);
 
 		int isRegistered = 0;
+
 		try {
 			isRegistered = memberService.registerMember(member);
+
+			if (isRegistered > 0) {
+
+				request.setAttribute("successMessage", "Member registered successfully!");
+				request.getRequestDispatcher("registerMember.jsp").forward(request, response);
+			} else {
+
+				request.setAttribute("errorMessage", "Registration failed. Try again.");
+				request.setAttribute("name", name);
+				request.setAttribute("email", email);
+				request.setAttribute("mobile", mobile);
+				request.setAttribute("genderSelected", gender);
+				request.setAttribute("address", address);
+				doGet(request, response);
+			}
 		} catch (InvalidException e) {
-			e.printStackTrace();
+			request.setAttribute("errorMessage", e.getMessage());
+			request.setAttribute("name", name);
+			request.setAttribute("email", email);
+			request.setAttribute("mobile", mobile);
+			request.setAttribute("genderSelected", gender);
+			request.setAttribute("address", address);
+			doGet(request, response);
 		}
 
-		if (isRegistered > 0) {
-
-			request.setAttribute("successMessage", "Member registered successfully!");
-			request.getRequestDispatcher("registerMember.jsp").forward(request, response);
-		} else {
-
-			request.setAttribute("errorMessage", "Registration failed. Try again.");
-			request.getRequestDispatcher("registerMember.jsp").forward(request, response);
-		}
 	}
 }
