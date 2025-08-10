@@ -3,9 +3,9 @@ package com.webLibraryManagementSystem.controllers;
 import java.io.IOException;
 
 import com.webLibraryManagementSystem.domain.Book;
+import com.webLibraryManagementSystem.exceptions.InvalidException;
 import com.webLibraryManagementSystem.services.impl.BookServicesImpl;
 import com.webLibraryManagementSystem.utilities.BookAvailability;
-import com.webLibraryManagementSystemexceptions.InvalidException;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;

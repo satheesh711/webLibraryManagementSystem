@@ -8,10 +8,12 @@ import com.webLibraryManagementSystem.dao.impl.BookDaoImpl;
 import com.webLibraryManagementSystem.dao.impl.IssueRecordDaoImpl;
 import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.domain.IssueRecord;
+import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
+import com.webLibraryManagementSystem.exceptions.InvalidException;
 import com.webLibraryManagementSystem.services.IssueService;
 import com.webLibraryManagementSystem.utilities.BookAvailability;
 import com.webLibraryManagementSystem.utilities.BookStatus;
-import com.webLibraryManagementSystemexceptions.InvalidException;
 
 public class IssueServiceImpl implements IssueService {
 
@@ -19,7 +21,8 @@ public class IssueServiceImpl implements IssueService {
 	private final IssueRecordDao issueDao = new IssueRecordDaoImpl();
 
 	@Override
-	public void addIssue(IssueRecord newIssue) throws InvalidException {
+	public void addIssue(IssueRecord newIssue)
+			throws InvalidException, BookNotFoundException, DatabaseOperationException {
 
 		if (newIssue.getIssueDate().isAfter(LocalDate.now())) {
 			throw new InvalidException("Date Should not greater than today!");

@@ -5,9 +5,9 @@ import java.util.List;
 import com.webLibraryManagementSystem.dao.MemberDao;
 import com.webLibraryManagementSystem.dao.impl.MemberDaoImpl;
 import com.webLibraryManagementSystem.domain.Member;
+import com.webLibraryManagementSystem.exceptions.InvalidException;
 import com.webLibraryManagementSystem.services.MemberService;
 import com.webLibraryManagementSystem.utilities.Validations;
-import com.webLibraryManagementSystemexceptions.InvalidException;
 
 public class MemberServiceImpl implements MemberService {
 

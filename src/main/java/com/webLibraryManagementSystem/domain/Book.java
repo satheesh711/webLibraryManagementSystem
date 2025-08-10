@@ -25,8 +25,12 @@ public class Book {
 		this.availability = availability;
 	}
 
-	public Book(String title, String author, BookCategory category, BookStatus status, BookAvailability availability) {
-		this(-1, title, author, category, status, availability);
+	public Book(String title, String author, BookCategory category) {
+		this(-1, title, author, category);
+	}
+
+	public Book(int bookId, String title, String author, BookCategory category) {
+		this(bookId, title, author, category, BookStatus.ACTIVE, BookAvailability.AVAILABLE);
 	}
 
 	public int getBookId() {
@@ -56,9 +60,7 @@ public class Book {
 
 	@Override
 	public String toString() {
-
-		return title;
-
+		return title + " - " + author;
 	}
 
 	@Override

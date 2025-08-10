@@ -32,7 +32,7 @@
 				<label for="email">Email:</label> 
 				<input type="email" name="email" id="email" required value="${email}" />
 			 
-				<label for="mobile">Mobile:</label> <input type="text" name="mobile"
+				<label for="mobile">Mobile:</label> <input type="number" name="mobile"
 					id="mobile" required value="${mobile}" />
 
 				<label for="gender">Gender:</label> 

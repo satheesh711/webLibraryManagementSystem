@@ -2,9 +2,19 @@ package com.webLibraryManagementSystem.utilities;
 
 public class Validations {
 
+	public static boolean isValidTitle(String title) {
+
+		return title.trim().matches("[a-zA-Z0-9 :\\-.'&/,?!+]{0,50}");
+	}
+
+	public static boolean isValidName(String name) {
+
+		return name.trim().matches("[a-zA-Z .'-]{0,50}");
+	}
+
 	public static boolean isValidString(String name) {
 
-		return name.trim().matches("^[A-Z a-z,:]{2,255}$");
+		return name.trim().matches("^[A-Z a-z,:]{3,50}$");
 	}
 
 	public static boolean isValidMobile(long mobile) {

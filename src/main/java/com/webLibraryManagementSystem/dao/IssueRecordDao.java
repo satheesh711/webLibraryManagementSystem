@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.domain.IssueRecord;
-import com.webLibraryManagementSystemexceptions.InvalidException;
+import com.webLibraryManagementSystem.exceptions.InvalidException;
 
 public interface IssueRecordDao {
 

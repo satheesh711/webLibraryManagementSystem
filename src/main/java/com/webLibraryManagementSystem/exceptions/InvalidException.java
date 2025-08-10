@@ -1,4 +1,4 @@
-package com.webLibraryManagementSystemexceptions;
+package com.webLibraryManagementSystem.exceptions;
 
 public class InvalidException extends Exception {
 

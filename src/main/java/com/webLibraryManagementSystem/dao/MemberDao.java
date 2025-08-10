@@ -5,7 +5,7 @@ import java.sql.PreparedStatement;
 import java.util.List;
 
 import com.webLibraryManagementSystem.domain.Member;
-import com.webLibraryManagementSystemexceptions.InvalidException;
+import com.webLibraryManagementSystem.exceptions.InvalidException;
 
 public interface MemberDao {
 

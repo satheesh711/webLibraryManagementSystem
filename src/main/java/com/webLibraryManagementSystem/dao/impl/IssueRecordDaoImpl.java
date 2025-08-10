@@ -11,10 +11,10 @@ import com.webLibraryManagementSystem.dao.BookDao;
 import com.webLibraryManagementSystem.dao.IssueRecordDao;
 import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.domain.IssueRecord;
+import com.webLibraryManagementSystem.exceptions.InvalidException;
 import com.webLibraryManagementSystem.utilities.ConnectionPoolingServlet;
 import com.webLibraryManagementSystem.utilities.IssueStatus;
 import com.webLibraryManagementSystem.utilities.SQLQueries;
-import com.webLibraryManagementSystemexceptions.InvalidException;
 
 public class IssueRecordDaoImpl implements IssueRecordDao {
 

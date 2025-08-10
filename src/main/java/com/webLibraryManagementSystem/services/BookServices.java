@@ -5,27 +5,32 @@ import java.util.Map;
 
 import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.domain.CustomActiveIssuedBooks;
+import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
+import com.webLibraryManagementSystem.exceptions.DuplicateBookException;
+import com.webLibraryManagementSystem.exceptions.InvalidBookDataException;
 import com.webLibraryManagementSystem.utilities.BookAvailability;
-import com.webLibraryManagementSystemexceptions.InvalidException;
 
 public interface BookServices {
 
-	void addBook(Book book) throws InvalidException;
+	void addBook(Book book) throws InvalidBookDataException, DuplicateBookException, DatabaseOperationException;
 
-	List<Book> getBooks() throws InvalidException;
+	List<Book> getBooks() throws DatabaseOperationException;
 
-	void deleteBook(Book book) throws InvalidException;
+	void deleteBook(Book book) throws BookNotFoundException, DatabaseOperationException, InvalidBookDataException;
 
-	void updateBook(Book newBook, Book oldBook) throws InvalidException;
+	void updateBook(Book newBook, Book oldBook)
+			throws BookNotFoundException, InvalidBookDataException, DatabaseOperationException, DuplicateBookException;
 
-	void updateBookAvailability(Book book, BookAvailability avail) throws InvalidException;
+	void updateBookAvailability(Book book, BookAvailability avail)
+			throws BookNotFoundException, DatabaseOperationException;
 
-	Book getBookById(int bookId) throws InvalidException;
+	Book getBookById(int bookId) throws DatabaseOperationException, BookNotFoundException;
 
-	Map<String, Integer> getBookCountByCategory() throws InvalidException;
+	Map<String, Integer> getBookCountByCategory() throws DatabaseOperationException;
 
-	List<CustomActiveIssuedBooks> getActiveIssuedBooks() throws InvalidException;
+	List<CustomActiveIssuedBooks> getActiveIssuedBooks() throws DatabaseOperationException;
 
-	List<CustomActiveIssuedBooks> getOverDueBooks() throws InvalidException;
+	List<CustomActiveIssuedBooks> getOverDueBooks() throws DatabaseOperationException;
 
 }

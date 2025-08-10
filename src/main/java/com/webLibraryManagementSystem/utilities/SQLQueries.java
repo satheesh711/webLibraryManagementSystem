@@ -24,17 +24,19 @@ public class SQLQueries {
 
 	public static final String BOOK_INSERT = "INSERT INTO books (title, author, category, status, availability) VALUES (?, ?, ?, ?, ?)";
 
-	public static final String BOOK_UPDATE = "UPDATE books SET  title = ?, author = ?, category = ?, status = ?, availability = ? WHERE book_id = ?";
+	public static final String BOOK_UPDATE = "UPDATE books SET  title = ?, author = ?, category = ?, status = ?, availability = ? WHERE book_id = ? AND status = 'A'";
 
-	public static final String BOOK_UPDATE_AVAILABILITY = "UPDATE books SET availability = ? WHERE book_id = ?";
+	public static final String BOOK_UPDATE_AVAILABILITY = "UPDATE books SET availability = ? WHERE book_id = ? AND status = 'A'";
 
-	public static final String BOOK_SELECT_BY_TITLE_AUTHOR = "SELECT * FROM books WHERE LOWER(title) = LOWER(?) AND LOWER(author) = LOWER(?)";
+	public static final String BOOK_SELECT_BY_TITLE_AUTHOR = "SELECT * FROM books WHERE LOWER(title) = LOWER(?) AND LOWER(author) = LOWER(?) AND status = 'A' ";
 
-	public static final String BOOK_SELECT_ALL = "SELECT * FROM books";
+	public static final String BOOK_SELECT_ALL = "SELECT * FROM books WHERE status = 'A'";
 
-	public static final String BOOK_SELECT_BY_ID = "SELECT * FROM books WHERE book_id = ?";
+	public static final String BOOK_SELECT_BY_ID = "SELECT * FROM books WHERE book_id = ? AND status = 'A'";
 
-	public static final String BOOK_DELETE = "DELETE FROM books WHERE book_id = ? ";
+	public static final String BOOK_DELETE = "UPDATE books SET status = 'I' WHERE book_id = ? AND status = 'A'";
+
+	public static final String BOOK_EXISTS_BY_TITLE_AUTHOR_EXCEPT_ID = "SELECT COUNT(*) FROM books WHERE title = ? AND author = ? AND book_id <> ? AND status = 'A'";
 
 	// issue
 
@@ -44,11 +46,11 @@ public class SQLQueries {
 
 	public static final String ISSUE_SELECT_RETURN_DATE = "SELECT * FROM issue_records WHERE book_id = ? AND member_id = ? AND status = 'I' ";
 
-	public static final String GET_BOOK_BY_CATEGORY = "SELECT category, COUNT(*) AS book_count FROM books GROUP BY category";
+	public static final String GET_BOOK_BY_CATEGORY = "SELECT category, COUNT(*) AS book_count FROM books WHERE status = 'A'   GROUP BY category";
 
-	public static final String GET_ACTIVE_ISSUED_BOOKS = "SELECT m.member_id , m.name AS member_name , b.book_id ,b.title AS book_title , ir.issue_date FROM members m JOIN issue_records ir ON m.member_id = ir.member_id JOIN books b ON ir.book_id = b.book_id WHERE ir.return_date IS NULL ORDER BY m.member_id";
+	public static final String GET_ACTIVE_ISSUED_BOOKS = "SELECT m.member_id , m.name AS member_name , b.book_id ,b.title AS book_title , ir.issue_date FROM members m JOIN issue_records ir ON m.member_id = ir.member_id JOIN books b ON ir.book_id = b.book_id WHERE ir.return_date IS NULL ORDER BY m.member_id AND  b.status = 'A' AND b.availability= 'A'";
 
-	public static final String GET_OVER_DUE_BOOKS = "SELECT b.book_id , b.title AS book_name , m.member_id , m.name AS member_name , ir.issue_date FROM issue_records ir JOIN members m ON ir.member_id = m.member_id JOIN books b ON ir.book_id = b.book_id WHERE ir.return_date IS NULL AND DATEDIFF(CURDATE(), ir.issue_date) > 14 ORDER BY ir.issue_date";
+	public static final String GET_OVER_DUE_BOOKS = "SELECT b.book_id , b.title AS book_name , m.member_id , m.name AS member_name , ir.issue_date FROM issue_records ir JOIN members m ON ir.member_id = m.member_id JOIN books b ON ir.book_id = b.book_id WHERE ir.return_date IS NULL AND DATEDIFF(CURDATE(), ir.issue_date) > 14  AND b.status = 'A' ORDER BY ir.issue_date";
 	// Log Tables SQLQueries
 	public static final String BOOKS_LOG_INSERT = "INSERT INTO books_log (book_id,title, author, category, status, availability) VALUES (?,?, ?, ?, ?, ?)";
 
