@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import com.webLibraryManagementSystem.domain.CustomActiveIssuedBooks;
-import com.webLibraryManagementSystem.exceptions.InvalidException;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
 import com.webLibraryManagementSystem.services.impl.BookServicesImpl;
 
 import jakarta.servlet.RequestDispatcher;
@@ -31,7 +31,7 @@ public class ActiveMembersServlet extends HttpServlet {
 			List<CustomActiveIssuedBooks> books = bookService.getActiveIssuedBooks();
 			request.setAttribute("activeIssueBooks", books);
 
-		} catch (InvalidException e) {
+		} catch (DatabaseOperationException e) {
 			request.setAttribute("message", e.getMessage());
 		}
 		RequestDispatcher dispatcher = request.getRequestDispatcher("activeMembers.jsp");

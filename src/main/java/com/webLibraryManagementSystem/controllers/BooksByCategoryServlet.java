@@ -3,7 +3,7 @@ package com.webLibraryManagementSystem.controllers;
 import java.io.IOException;
 import java.util.Map;
 
-import com.webLibraryManagementSystem.exceptions.InvalidException;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
 import com.webLibraryManagementSystem.services.impl.BookServicesImpl;
 
 import jakarta.servlet.RequestDispatcher;
@@ -30,7 +30,7 @@ public class BooksByCategoryServlet extends HttpServlet {
 			Map<String, Integer> books = bookService.getBookCountByCategory();
 			request.setAttribute("books", books);
 
-		} catch (InvalidException e) {
+		} catch (DatabaseOperationException e) {
 			request.setAttribute("message", e.getMessage());
 		}
 		RequestDispatcher dispatcher = request.getRequestDispatcher("booksByCategory.jsp");

@@ -18,39 +18,63 @@
             	${message}
         	</p>
     	</c:if>
-        <form action="addBook" method="post" >
-            <label for="title">Title</label>
-            <input type="text" id="title" name="title" required value="${title}" />
+        <form action="addBook" method="post">
+    <label for="title">Title</label>
+    <input type="text" id="title" name="title"
+           required value="${title}"
+           maxlength="50"
+           oninput="allowOnlyTitle(this)" />
+    <small id="titleHint" class="hint">Allowed: letters, numbers, spaces, : - . ' & / , ? ! +</small>
 
-            <label for="author">Author</label>
-            <input type="text" id="author" name="author" required value = "${author }"/>
+    <label for="author">Author</label>
+    <input type="text" id="author" name="author"
+           required value="${author}"
+           maxlength="50"
+           oninput="allowOnlyAuthor(this)" />
+    <small id="authorHint" class="hint">Allowed: letters, spaces, . ' -</small>
 
-            <label for="category">Category</label>
-            <select id="category" name="category" required>
-                <option value="">Select Category</option>
-                <c:forEach var="cat" items="${categories}">
-        			<option value="${cat}" ${cat == category ? 'selected' : ''}>${cat}</option>
-    			</c:forEach>
-            </select>
+    <label for="category">Category</label>
+    <select id="category" name="category" required>
+        <option value="">Select Category</option>
+        <c:forEach var="cat" items="${categories}">
+            <option value="${cat}" ${cat == category ? 'selected' : ''}>${cat}</option>
+        </c:forEach>
+    </select>
 
-            <label for="status">Status</label>
-            <select id="status" name="status" required>
-                <option value="">Select Status</option>
-                <c:forEach var="stat" items="${statuses}">
-        			<option value="${stat}" ${stat == status ? 'selected' : ''}>${stat}</option>
-    			</c:forEach>
-            </select>
+    <button type="submit">Submit</button>
+</form>
 
-            <label for="availability">Availability</label>
-            <select id="availability" name="availability" required>
-                <option value="">Select Availability</option>
-                <c:forEach var="avail" items="${availabilities}">
-        			<option value="${avail}" ${avail == availability ? 'selected' : ''}>${avail}</option>
-    			</c:forEach>
-            </select>
+<style>
+    .hint {
+        display: block;
+        font-size: 12px;
+        color: gray;
+        margin-bottom: 10px;
+    }
+</style>
 
-            <button type="submit">Submit</button>
-        </form>
+<script>
+    function allowOnlyTitle(input) {
+        const pattern = /[^a-zA-Z0-9 :\-.'&/,?!+]/g;
+        if (pattern.test(input.value)) {
+            document.getElementById("titleHint").style.color = "red";
+        } else {
+            document.getElementById("titleHint").style.color = "gray";
+        }
+        input.value = input.value.replace(pattern, '');
+    }
+
+    function allowOnlyAuthor(input) {
+        const pattern = /[^a-zA-Z .'\-]/g;
+        if (pattern.test(input.value)) {
+            document.getElementById("authorHint").style.color = "red";
+        } else {
+            document.getElementById("authorHint").style.color = "gray";
+        }
+        input.value = input.value.replace(pattern, '');
+    }
+</script>
+
     </div>
 </body>
 </html>

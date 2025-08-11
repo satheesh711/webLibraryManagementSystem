@@ -7,6 +7,8 @@ import java.util.List;
 
 import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.domain.Member;
+import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
 import com.webLibraryManagementSystem.exceptions.InvalidException;
 import com.webLibraryManagementSystem.services.BookServices;
 import com.webLibraryManagementSystem.services.IssueService;
@@ -40,7 +42,7 @@ public class ReturnBookServlet extends HttpServlet {
 		try {
 			List<Book> books = bookService.getBooks();
 			request.setAttribute("booksList", books);
-		} catch (InvalidException e) {
+		} catch (DatabaseOperationException e) {
 			request.setAttribute("errorMessage", e.getMessage());
 		}
 
@@ -62,8 +64,8 @@ public class ReturnBookServlet extends HttpServlet {
 		Book book = null;
 		try {
 			book = bookService.getBookById(Integer.parseInt(request.getParameter("bookId")));
-		} catch (NumberFormatException | InvalidException e) {
-			e.printStackTrace();
+		} catch (NumberFormatException | DatabaseOperationException | BookNotFoundException e) {
+			request.setAttribute("errorMessage", e.getMessage());
 		}
 		Member member = null;
 		try {

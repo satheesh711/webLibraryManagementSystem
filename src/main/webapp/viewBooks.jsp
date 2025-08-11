@@ -54,7 +54,7 @@
                       <td data-cell="Status">${book.getStatus()}</td>
                       <td data-cell="Availability">${book.getAvailability()}</td>
                       <td data-cell="Actions"> 
-                      <button id="edit" name="edit" onclick="location.href='updateBook?book=${book.getTitle()}'">Edit</button>
+                       
                       <button id="delete" name="delete" onclick="confirmDelete(${book.getBookId()})">Delete</button>
                       </td>
                   </tr>

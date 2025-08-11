@@ -1,7 +1,7 @@
 package com.webLibraryManagementSystem.dao;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.time.LocalDate;
 
 import com.webLibraryManagementSystem.domain.Book;
@@ -14,5 +14,5 @@ public interface IssueRecordDao {
 
 	void returnBook(Book book, int id, LocalDate date) throws InvalidException;
 
-	void issueLog(IssueRecord issue, Connection con, PreparedStatement stmt) throws InvalidException;
+	void issueLog(IssueRecord issue, Connection con) throws SQLException;
 }

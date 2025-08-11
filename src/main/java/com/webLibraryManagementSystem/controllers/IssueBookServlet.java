@@ -8,6 +8,8 @@ import java.util.List;
 import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.domain.IssueRecord;
 import com.webLibraryManagementSystem.domain.Member;
+import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
 import com.webLibraryManagementSystem.exceptions.InvalidException;
 import com.webLibraryManagementSystem.services.BookServices;
 import com.webLibraryManagementSystem.services.IssueService;
@@ -24,9 +26,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class IssueBookServlet
- */
 @WebServlet("/IssueBookServlet")
 public class IssueBookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -45,14 +44,9 @@ public class IssueBookServlet extends HttpServlet {
 		try {
 			List<Book> books = bookService.getBooks();
 			request.setAttribute("booksList", books);
-		} catch (InvalidException e) {
-			request.setAttribute("errorMessage", e.getMessage());
-		}
-
-		try {
 			List<Member> members = memberService.getMembers();
 			request.setAttribute("membersList", members);
-		} catch (InvalidException e) {
+		} catch (DatabaseOperationException | InvalidException e) {
 			request.setAttribute("errorMessage", e.getMessage());
 		}
 
@@ -98,7 +92,7 @@ public class IssueBookServlet extends HttpServlet {
 				doGet(request, response);
 				return;
 
-			} catch (InvalidException e) {
+			} catch (InvalidException | BookNotFoundException | DatabaseOperationException e) {
 				request.setAttribute("errorMessage", e.getMessage());
 
 			}

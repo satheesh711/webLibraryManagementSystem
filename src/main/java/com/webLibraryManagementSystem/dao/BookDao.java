@@ -1,7 +1,6 @@
 package com.webLibraryManagementSystem.dao;
 
 import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.List;
 import java.util.Map;
@@ -18,7 +17,7 @@ public interface BookDao {
 
 	void updateBook(Book book, Book oldBook) throws BookNotFoundException, DatabaseOperationException;
 
-	void updateBookAvailability(Book book, BookAvailability availability)
+	void updateBookAvailability(Book book, BookAvailability availability, Connection con)
 			throws BookNotFoundException, DatabaseOperationException;
 
 	boolean existsByTitleAndAuthorExceptId(String title, String author, int excludeId)
@@ -26,7 +25,7 @@ public interface BookDao {
 
 	boolean existsByTitleAndAuthor(String title, String author) throws DatabaseOperationException;
 
-	void bookLog(Book book, Connection con, PreparedStatement stmt) throws SQLException;
+	void bookLog(Book book, Connection con) throws SQLException;
 
 	Map<String, Integer> getBookCountByCategory() throws DatabaseOperationException;
 
