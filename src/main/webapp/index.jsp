@@ -18,9 +18,7 @@
 			</div>
 			<div class="submenu" id="bookMenu">
 				<a href="addBook" target="contentFrame">➕ Add Book</a> 
-				<a href="updateBook" target="contentFrame">✏️ Update Book</a> 
-				<a href="updateAvailability" target="contentFrame">📦 Update
-					Availability</a> 
+				<a href="updateBook" target="contentFrame">✏️ Update Book</a>  
 				<a href="viewBooks" target="contentFrame">📘 View All Books</a>
 			</div>
 		</div>
@@ -55,7 +53,7 @@
 			<div class="submenu" id="reportsMenu">
 				<a href="booksByCategory" target="contentFrame">📚 Books by
 					Category</a> <a href="activeMembers" target="contentFrame">✅
-					Active Members</a> <a href="overdueBooks" target="contentFrame">⏰
+					Active Issue Books</a> <a href="overdueBooks" target="contentFrame">⏰
 					Overdue Books</a>
 			</div>
 		</div>

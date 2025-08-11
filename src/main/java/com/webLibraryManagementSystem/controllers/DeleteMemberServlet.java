@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.webLibraryManagementSystem.domain.CustomActiveIssuedBooks;
 import com.webLibraryManagementSystem.domain.Member;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
 import com.webLibraryManagementSystem.exceptions.InvalidException;
 import com.webLibraryManagementSystem.services.impl.BookServicesImpl;
 import com.webLibraryManagementSystem.services.impl.MemberServiceImpl;
@@ -45,7 +46,7 @@ public class DeleteMemberServlet extends HttpServlet {
 				request.setAttribute("message", member.getName() + "deleted Successfully");
 			}
 
-		} catch (InvalidException e) {
+		} catch ( DatabaseOperationException e) {
 			request.setAttribute("message", e.getMessage());
 		}
 

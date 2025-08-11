@@ -11,7 +11,10 @@ import com.webLibraryManagementSystem.dao.BookDao;
 import com.webLibraryManagementSystem.dao.IssueRecordDao;
 import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.domain.IssueRecord;
+import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
 import com.webLibraryManagementSystem.exceptions.InvalidException;
+import com.webLibraryManagementSystem.utilities.BookAvailability;
 import com.webLibraryManagementSystem.utilities.ConnectionPoolingServlet;
 import com.webLibraryManagementSystem.utilities.IssueStatus;
 import com.webLibraryManagementSystem.utilities.SQLQueries;
@@ -24,34 +27,24 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 	public void issueBook(IssueRecord newIssue, Book book) throws InvalidException {
 		Connection con = null;
 		PreparedStatement stmt = null;
-		PreparedStatement stmtAvailability = null;
-		PreparedStatement stmtBookLog = null;
+
 		try {
 			con = ConnectionPoolingServlet.getDataSource().getConnection();
 			stmt = con.prepareStatement(SQLQueries.ISSUE_INSERT);
 
 			stmt.setInt(1, newIssue.getBookId());
 			stmt.setInt(2, newIssue.getMemberId());
-			stmt.setString(3, String.valueOf(newIssue.getStatus().toString().charAt(0)));
+			stmt.setString(3, newIssue.getStatus().getDbName());
 			stmt.setDate(4, Date.valueOf(newIssue.getIssueDate()));
 
 			con.setAutoCommit(false);
 
 			stmt.executeUpdate();
-
-			stmtAvailability = con.prepareStatement(SQLQueries.BOOK_UPDATE_AVAILABILITY);
-			stmtBookLog = con.prepareStatement(SQLQueries.BOOKS_LOG_INSERT);
-
-			stmtAvailability.setString(1, "I");
-			stmtAvailability.setInt(2, book.getBookId());
-
-			stmtAvailability.executeUpdate();
-			bookDaoImpl.bookLog(book, con, stmtBookLog);
-
+			bookDaoImpl.updateBookAvailability(book, BookAvailability.ISSUED, con);
 			con.commit();
 			con.setAutoCommit(true);
 
-		} catch (SQLException e) {
+		} catch (SQLException | BookNotFoundException | DatabaseOperationException e) {
 			try {
 				con.rollback();
 				con.setAutoCommit(true);
@@ -65,8 +58,6 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 			try {
 				con.close();
 				stmt.close();
-				stmtAvailability.close();
-				stmtBookLog.close();
 
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -80,10 +71,8 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 	public void returnBook(Book book, int memberId, LocalDate date) throws InvalidException {
 		Connection con = null;
 		PreparedStatement stmt = null;
-		PreparedStatement stmtAvailability = null;
-		PreparedStatement stmtBookLog = null;
 		PreparedStatement stmt1 = null;
-		PreparedStatement IssueLogstmt = null;
+
 		try {
 			con = ConnectionPoolingServlet.getDataSource().getConnection();
 			stmt = con.prepareStatement(SQLQueries.ISSUE_SELECT_RETURN_DATE);
@@ -100,8 +89,7 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 				int issueId = res.getInt("issue_id");
 				int bookId = res.getInt("book_id");
 				int issueMemberId = res.getInt("member_id");
-				IssueStatus status = res.getString("status").equalsIgnoreCase("I") ? IssueStatus.ISSUED
-						: IssueStatus.RETURNED;
+				IssueStatus status = IssueStatus.fromDbName(res.getString("status"));
 				LocalDate issueDate = res.getDate("issue_date").toLocalDate();
 				Date sqlDate = res.getDate("return_date");
 				LocalDate returnDate = sqlDate == null ? null : sqlDate.toLocalDate();
@@ -123,23 +111,15 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 			con.setAutoCommit(false);
 
 			stmt1.executeUpdate();
-			IssueLogstmt = con.prepareStatement(SQLQueries.ISSUE_LOG_INSERT);
-			issueLog(issue, con, IssueLogstmt);
 
-			stmtAvailability = con.prepareStatement(SQLQueries.BOOK_UPDATE_AVAILABILITY);
-			stmtBookLog = con.prepareStatement(SQLQueries.BOOKS_LOG_INSERT);
+			issueLog(issue, con);
 
-			stmtAvailability.setString(1, "A");
-			stmtAvailability.setInt(2, book.getBookId());
-
-			stmtAvailability.executeUpdate();
-
-			bookDaoImpl.bookLog(book, con, stmtBookLog);
+			bookDaoImpl.updateBookAvailability(book, BookAvailability.AVAILABLE, con);
 
 			con.commit();
 			con.setAutoCommit(true);
 
-		} catch (SQLException e) {
+		} catch (SQLException | BookNotFoundException | DatabaseOperationException e) {
 			try {
 				con.rollback();
 				con.setAutoCommit(true);
@@ -153,10 +133,8 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 			try {
 				con.close();
 				stmt.close();
-				stmtAvailability.close();
-				stmtBookLog.close();
 				stmt1.close();
-				IssueLogstmt.close();
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -165,9 +143,9 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 	}
 
 	@Override
-	public void issueLog(IssueRecord issue, Connection con, PreparedStatement stmt) throws InvalidException {
+	public void issueLog(IssueRecord issue, Connection con) throws SQLException {
 		try {
-
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.ISSUE_LOG_INSERT);
 			stmt.setInt(1, issue.getIssueId());
 			stmt.setInt(2, issue.getBookId());
 			stmt.setInt(3, issue.getMemberId());
@@ -179,7 +157,7 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 		} catch (SQLException e) {
 
-			e.printStackTrace();
+			throw new SQLException();
 		}
 
 	}

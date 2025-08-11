@@ -6,7 +6,10 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.webLibraryManagementSystem.domain.Book;
-import com.webLibraryManagementSystem.exceptions.InvalidException;
+import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
+import com.webLibraryManagementSystem.exceptions.DuplicateBookException;
+import com.webLibraryManagementSystem.exceptions.InvalidBookDataException;
 import com.webLibraryManagementSystem.services.impl.BookServicesImpl;
 import com.webLibraryManagementSystem.utilities.BookAvailability;
 
@@ -41,7 +44,7 @@ public class UpdateAvailabilityServlet extends HttpServlet {
 
 					setAtributesSelected(request, book);
 				}
-			} catch (InvalidException e) {
+			} catch (DatabaseOperationException e) {
 				e.printStackTrace();
 			}
 		}
@@ -76,7 +79,8 @@ public class UpdateAvailabilityServlet extends HttpServlet {
 				setAtributes(request);
 			}
 
-		} catch (InvalidException e) {
+		} catch (BookNotFoundException | InvalidBookDataException | DatabaseOperationException
+				| DuplicateBookException e) {
 			request.setAttribute("message", e.getMessage());
 
 			request.setAttribute("formReset", false);
@@ -99,7 +103,7 @@ public class UpdateAvailabilityServlet extends HttpServlet {
 			request.setAttribute("books", books);
 			request.setAttribute("availabilities", availabilities);
 
-		} catch (InvalidException e) {
+		} catch (DatabaseOperationException e) {
 			e.printStackTrace();
 		}
 	}

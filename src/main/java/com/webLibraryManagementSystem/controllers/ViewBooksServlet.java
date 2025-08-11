@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.webLibraryManagementSystem.domain.Book;
-import com.webLibraryManagementSystem.exceptions.InvalidException;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
 import com.webLibraryManagementSystem.services.impl.BookServicesImpl;
 
 import jakarta.servlet.RequestDispatcher;
@@ -33,7 +33,7 @@ public class ViewBooksServlet extends HttpServlet {
 			request.setAttribute("books", books);
 			RequestDispatcher dispatcher = request.getRequestDispatcher("viewBooks.jsp");
 			dispatcher.forward(request, response);
-		} catch (InvalidException e) {
+		} catch (DatabaseOperationException e) {
 			e.printStackTrace();
 		}
 

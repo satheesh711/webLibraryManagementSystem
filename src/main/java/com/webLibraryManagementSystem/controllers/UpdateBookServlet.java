@@ -6,11 +6,12 @@ import java.util.Arrays;
 import java.util.List;
 
 import com.webLibraryManagementSystem.domain.Book;
-import com.webLibraryManagementSystem.exceptions.InvalidException;
+import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
+import com.webLibraryManagementSystem.exceptions.DuplicateBookException;
+import com.webLibraryManagementSystem.exceptions.InvalidBookDataException;
 import com.webLibraryManagementSystem.services.impl.BookServicesImpl;
-import com.webLibraryManagementSystem.utilities.BookAvailability;
 import com.webLibraryManagementSystem.utilities.BookCategory;
-import com.webLibraryManagementSystem.utilities.BookStatus;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -37,17 +38,19 @@ public class UpdateBookServlet extends HttpServlet {
 
 		if (selectedTitle != null) {
 			try {
-				Book book = bookService.getBooks().stream().filter(b -> b.getTitle().equals(selectedTitle)).findFirst()
+				Book book = bookService.getBooks().stream()
+						.filter(b -> (b.getTitle() + " - " + b.getAuthor()).equals(selectedTitle)).findFirst()
 						.orElse(null);
 				selectedBook = book;
 				if (book != null) {
 
 					setAtributesSelected(request, book);
 				}
-			} catch (InvalidException e) {
+			} catch (DatabaseOperationException e) {
 				e.printStackTrace();
 			}
 		}
+
 		setAtributes(request);
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("updateBook.jsp");
@@ -63,10 +66,8 @@ public class UpdateBookServlet extends HttpServlet {
 		String bookAuthor = request.getParameter("author");
 		int bookId = Integer.parseInt(request.getParameter("bookId"));
 		BookCategory bookcategory = BookCategory.valueOf(request.getParameter("category"));
-		BookStatus bookstatus = BookStatus.valueOf(request.getParameter("status"));
-		BookAvailability bookAvailability = BookAvailability.valueOf(request.getParameter("availability"));
 
-		Book newBook = new Book(bookId, bookTitle, bookAuthor, bookcategory, bookstatus, bookAvailability);
+		Book newBook = new Book(bookId, bookTitle, bookAuthor, bookcategory);
 
 		try {
 			if (selectedBook.equals(newBook)) {
@@ -83,7 +84,8 @@ public class UpdateBookServlet extends HttpServlet {
 				setAtributes(request);
 			}
 
-		} catch (InvalidException e) {
+		} catch (BookNotFoundException | InvalidBookDataException | DatabaseOperationException
+				| DuplicateBookException e) {
 			request.setAttribute("message", e.getMessage());
 
 			request.setAttribute("formReset", false);
@@ -102,27 +104,21 @@ public class UpdateBookServlet extends HttpServlet {
 			List<Book> books = new ArrayList<>(bookService.getBooks());
 
 			List<BookCategory> categories = new ArrayList<>(Arrays.asList(BookCategory.values()));
-			List<BookStatus> statuses = new ArrayList<>(Arrays.asList(BookStatus.values()));
-			List<BookAvailability> availabilities = new ArrayList<>(Arrays.asList(BookAvailability.values()));
 
 			request.setAttribute("books", books);
 			request.setAttribute("categories", categories);
-			request.setAttribute("statuses", statuses);
-			request.setAttribute("availabilities", availabilities);
 
-		} catch (InvalidException e) {
+		} catch (DatabaseOperationException e) {
 			e.printStackTrace();
 		}
 	}
 
 	public void setAtributesSelected(HttpServletRequest request, Book book) {
-		request.setAttribute("book", selectedBook.getTitle());
+		request.setAttribute("book", (selectedBook.getTitle() + " - " + selectedBook.getAuthor()));
 		request.setAttribute("bookId", book.getBookId());
 		request.setAttribute("bookTitle", book.getTitle());
 		request.setAttribute("author", book.getAuthor());
 		request.setAttribute("category", book.getCategory());
-		request.setAttribute("status", book.getStatus());
-		request.setAttribute("availability", book.getAvailability());
 
 	}
 }

@@ -3,7 +3,9 @@ package com.webLibraryManagementSystem.controllers;
 import java.io.IOException;
 
 import com.webLibraryManagementSystem.domain.Book;
-import com.webLibraryManagementSystem.exceptions.InvalidException;
+import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
+import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
+import com.webLibraryManagementSystem.exceptions.InvalidBookDataException;
 import com.webLibraryManagementSystem.services.impl.BookServicesImpl;
 import com.webLibraryManagementSystem.utilities.BookAvailability;
 
@@ -36,7 +38,7 @@ public class DeleteBookServlet extends HttpServlet {
 				request.setAttribute("message", book.getTitle() + " deleted Successfully");
 			}
 
-		} catch (InvalidException e) {
+		} catch (DatabaseOperationException | BookNotFoundException | InvalidBookDataException e) {
 			request.setAttribute("message", e.getMessage());
 		}
 

@@ -22,13 +22,15 @@
     	 <form action="updateBook" method="post" >
     	 
     	 	 <label for="book">Book </label>
-    	 	 <select id="book" name="book" required onchange="location.href='updateBook?book=' + this.value" >
-                <option value="" disabled selected>Select Book</option>
-                <c:forEach var="bookTitles" items="${books}">
-					<option value="${bookTitles}"
-						${bookTitles == book ? 'selected' : ''}>${bookTitles}</option>
-				</c:forEach>
-				</select>
+    	 	 <input list="bookList" id="book" name="book" 
+       placeholder="Search by title or author" value="${book}" ${book != null ? 'disabled' : ''}
+       onchange="location.href='updateBook?book=' + this.value" required />
+
+		<datalist id="bookList">
+		    <c:forEach var="bookObj" items="${books}">
+		      <option value="${bookObj}"></option>
+		  </c:forEach>
+		</datalist>
             
             <c:if test= "${not empty book}">
 	            <label for="bookId">Book Id </label>
@@ -36,11 +38,14 @@
 	   			<input id="bookId" type="hidden"  name = "bookId" value="${bookId }" />
 	    		
 	    		<label for="bookTitle">Book Title </label>
-	        	<input type="text" id="bookTitle" name="bookTitle" value="${bookTitle}" ${book == null ? 'disabled' : ''}required  />
-	  
+	        	<input type="text" id="bookTitle" name="bookTitle" value="${bookTitle}" ${book == null ? 'disabled' : ''} required  maxlength="50"
+           oninput="allowOnlyTitle(this)"  />
+	   <small id="titleHint" class="hint">Allowed: letters, numbers, spaces, : - . ' & / , ? ! +</small>
 	            
 	    	 	 <label for="author">Author</label>
-	        	 <input type="text" id="author" name="author" value="${author== null ? '' : author}"  ${book == null ? 'disabled' : ''} required  />
+	        	 <input type="text" id="author" name="author" value="${author== null ? '' : author}"  ${book == null ? 'disabled' : ''} required maxlength="50"
+           oninput="allowOnlyAuthor(this)" />
+	    		<small id="authorHint" class="hint">Allowed: letters, spaces, . ' -</small>
 	    		
 	    		<label for="category">Category</label>
 	    		 <select id="category" name="category" ${book == null ? 'disabled' : ''} required >
@@ -50,25 +55,34 @@
 		    		</c:forEach>
 	    		</select>
 	 
-	    		<label for="status">Status</label>
-	    		<select id="status" name="status" ${book == null ? 'disabled' : ''} required >
-	    		 <option value="" ${book == null ? 'selected' : ''} >Select Status</option>
-		    		<c:forEach var="stat" items="${statuses}">
-		        			<option value="${stat}" ${(stat == status) ? 'selected' : ''}>${stat}</option>
-		    		</c:forEach>
-	    		</select>
-	    	 	  
-	    		
-	    		<label for="availability">Availability</label>
-	    	 	 <select id="availability"  disabled >
-	    		 <option value="${availability == null ? '' : availability}">${availability == null ? '' : availability} </option>
-	    		</select>
-	    		<input name="availability" type="hidden" value = "${availability}" />
+	    		 
             </c:if>
   
    			<button type="submit">Update</button>
              
     	 </form>
+    	 
+    	 <script>
+    function allowOnlyTitle(input) {
+        const pattern = /[^a-zA-Z0-9 :\-.'&/,?!+]/g;
+        if (pattern.test(input.value)) {
+            document.getElementById("titleHint").style.color = "red";
+        } else {
+            document.getElementById("titleHint").style.color = "gray";
+        }
+        input.value = input.value.replace(pattern, '');
+    }
+
+    function allowOnlyAuthor(input) {
+        const pattern = /[^a-zA-Z .'\-]/g;
+        if (pattern.test(input.value)) {
+            document.getElementById("authorHint").style.color = "red";
+        } else {
+            document.getElementById("authorHint").style.color = "gray";
+        }
+        input.value = input.value.replace(pattern, '');
+    }
+</script>
    
     </div>
 </body>

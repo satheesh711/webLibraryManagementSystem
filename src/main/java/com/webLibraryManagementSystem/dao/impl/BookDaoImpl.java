@@ -145,11 +145,9 @@ public class BookDaoImpl implements BookDao {
 	public void updateBook(Book book, Book oldBook) throws BookNotFoundException, DatabaseOperationException {
 		Connection con = null;
 		PreparedStatement stmt = null;
-		PreparedStatement stmt1 = null;
 		try {
 			con = ConnectionPoolingServlet.getDataSource().getConnection();
 			stmt = con.prepareStatement(SQLQueries.BOOK_UPDATE);
-			stmt1 = con.prepareStatement(SQLQueries.BOOKS_LOG_INSERT);
 
 			stmt.setString(1, book.getTitle());
 			stmt.setString(2, book.getAuthor());
@@ -165,7 +163,7 @@ public class BookDaoImpl implements BookDao {
 				con.rollback();
 				throw new BookNotFoundException("No book found with the given ID. Update failed.");
 			}
-			bookLog(oldBook, con, stmt1);
+			bookLog(oldBook, con);
 
 			con.commit();
 			con.setAutoCommit(true);
@@ -182,7 +180,7 @@ public class BookDaoImpl implements BookDao {
 			try {
 				con.close();
 				stmt.close();
-				stmt1.close();
+
 				con.setAutoCommit(true);
 			} catch (SQLException e) {
 				System.err.println("Failed to reset auto-commit: " + e.getMessage());
@@ -191,15 +189,20 @@ public class BookDaoImpl implements BookDao {
 	}
 
 	@Override
-	public void updateBookAvailability(Book book, BookAvailability availability)
+	public void updateBookAvailability(Book book, BookAvailability availability, Connection con)
 			throws BookNotFoundException, DatabaseOperationException {
-		Connection con = null;
+		if (con == null) {
+			try {
+				con = ConnectionPoolingServlet.getDataSource().getConnection();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
 		PreparedStatement stmt = null;
 		PreparedStatement stmt1 = null;
 		try {
-			con = ConnectionPoolingServlet.getDataSource().getConnection();
+
 			stmt = con.prepareStatement(SQLQueries.BOOK_UPDATE_AVAILABILITY);
-			stmt1 = con.prepareStatement(SQLQueries.BOOKS_LOG_INSERT);
 
 			stmt.setString(1, availability.getDbName());
 			stmt.setInt(2, book.getBookId());
@@ -213,7 +216,7 @@ public class BookDaoImpl implements BookDao {
 						"Book with ID " + book.getBookId() + " not found. Availability not updated.");
 			}
 
-			bookLog(book, con, stmt1);
+			bookLog(book, con);
 			con.commit();
 			con.setAutoCommit(true);
 
@@ -240,12 +243,10 @@ public class BookDaoImpl implements BookDao {
 	public void deleteBook(Book book) throws BookNotFoundException, DatabaseOperationException {
 		Connection con = null;
 		PreparedStatement stmt = null;
-		PreparedStatement stmt1 = null;
 
 		try {
 			con = ConnectionPoolingServlet.getDataSource().getConnection();
 			stmt = con.prepareStatement(SQLQueries.BOOK_DELETE);
-			stmt1 = con.prepareStatement(SQLQueries.BOOKS_LOG_INSERT);
 
 			stmt.setInt(1, book.getBookId());
 			con.setAutoCommit(false);
@@ -256,7 +257,7 @@ public class BookDaoImpl implements BookDao {
 				throw new BookNotFoundException("No Book found with Title: " + book.getTitle());
 			}
 
-			bookLog(book, con, stmt1);
+			bookLog(book, con);
 			con.commit();
 			con.setAutoCommit(true);
 		} catch (SQLException e) {
@@ -271,7 +272,7 @@ public class BookDaoImpl implements BookDao {
 			try {
 				con.close();
 				stmt.close();
-				stmt1.close();
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -279,10 +280,10 @@ public class BookDaoImpl implements BookDao {
 	}
 
 	@Override
-	public void bookLog(Book book, Connection con, PreparedStatement stmt) throws SQLException {
+	public void bookLog(Book book, Connection con) throws SQLException {
 
 		try {
-
+			PreparedStatement stmt = con.prepareStatement(SQLQueries.BOOKS_LOG_INSERT);
 			stmt.setInt(1, book.getBookId());
 			stmt.setString(2, book.getTitle());
 			stmt.setString(3, book.getAuthor());
