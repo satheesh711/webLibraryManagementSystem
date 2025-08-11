@@ -27,7 +27,7 @@
 		<form action="RegisterMemberServlet" method="post">
 		 
 				<label for="name">Name:</label> <input type="text" name="name"
-					id="name" required  value="${name}"/>
+					id="name" required pattern="[A-Za-z ]+" value="${name}"/>
 			 
 				<label for="email">Email:</label> 
 				<input type="email" name="email" id="email" required value="${email}" />

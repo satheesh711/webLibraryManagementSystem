@@ -41,6 +41,7 @@ public class RegisterMemberServlet extends HttpServlet {
 			throws ServletException, IOException {
 
 		String name = request.getParameter("name");
+
 		String email = request.getParameter("email");
 		Long mobile = Long.parseLong(request.getParameter("mobile"));
 		String genderStr = request.getParameter("gender");
