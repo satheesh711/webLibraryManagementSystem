@@ -17,9 +17,6 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-/**
- * Servlet implementation class DeleteMember
- */
 @WebServlet("/DeleteMember")
 public class DeleteMemberServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -46,8 +43,10 @@ public class DeleteMemberServlet extends HttpServlet {
 				request.setAttribute("message", member.getName() + "deleted Successfully");
 			}
 
-		} catch ( DatabaseOperationException e) {
+		} catch (DatabaseOperationException e) {
 			request.setAttribute("message", e.getMessage());
+		} catch (InvalidException e) {
+			e.printStackTrace();
 		}
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("MembersViewAllServlet");
