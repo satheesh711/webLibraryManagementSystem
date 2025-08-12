@@ -12,6 +12,8 @@ import com.webLibraryManagementSystem.domain.Member;
 import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
 import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
 import com.webLibraryManagementSystem.exceptions.InvalidException;
+import com.webLibraryManagementSystem.exceptions.InvalidIssueDataException;
+import com.webLibraryManagementSystem.exceptions.InvalidMemberDataException;
 import com.webLibraryManagementSystem.services.BookServices;
 import com.webLibraryManagementSystem.services.IssueService;
 import com.webLibraryManagementSystem.services.MemberService;
@@ -44,51 +46,20 @@ public class IssueBookServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		String selectedTitle = request.getParameter("book") != null ? request.getParameter("book").trim() : "";
-		String memberNameTyped = request.getParameter("memberNameTyped") != null
-				? request.getParameter("memberNameTyped").trim()
-				: "";
-
 		try {
 			List<Book> books;
-			if (!selectedTitle.isEmpty()) {
-				books = bookService.getBooks().stream()
-						.filter(b -> b.getTitle().toLowerCase().contains(selectedTitle.toLowerCase())
-								|| b.getAuthor().toLowerCase().contains(selectedTitle.toLowerCase()))
-						.filter(b -> b.getStatus() == BookStatus.ACTIVE
-								&& b.getAvailability() == BookAvailability.AVAILABLE)
-						.collect(Collectors.toList());
-			} else {
-				books = bookService.getBooks().stream().filter(
-						b -> b.getStatus() == BookStatus.ACTIVE && b.getAvailability() == BookAvailability.AVAILABLE)
-						.collect(Collectors.toList());
-			}
+
+			books = bookService.getBooks().stream().filter(
+					b -> b.getStatus() == BookStatus.ACTIVE && b.getAvailability() == BookAvailability.AVAILABLE)
+					.collect(Collectors.toList());
+
 			request.setAttribute("booksList", books);
 
 			List<Member> members;
-			if (!memberNameTyped.isEmpty()) {
-				members = memberService.getMembers().stream()
-						.filter(m -> m.getName().toLowerCase().contains(memberNameTyped.toLowerCase()))
-						.collect(Collectors.toList());
-			} else {
-				members = memberService.getMembers();
-			}
+
+			members = memberService.getMembers();
+
 			request.setAttribute("membersList", members);
-
-			if (request.getAttribute("successMessage") == null) {
-				Book exactBook = bookService.getBooks().stream()
-						.filter(b -> (b.getTitle() + " - " + b.getAuthor()).equalsIgnoreCase(selectedTitle)).findFirst()
-						.orElse(null);
-				request.setAttribute("bookSelected", exactBook);
-
-				Member exactMember = memberService.getMembers().stream()
-						.filter(m -> (m.getName() + " (" + m.getMobile() + ")").equalsIgnoreCase(memberNameTyped))
-						.findFirst().orElse(null);
-				request.setAttribute("memberSelected", exactMember);
-			}
-
-			request.setAttribute("memberNameTyped", memberNameTyped);
-			request.setAttribute("book", selectedTitle);
 
 		} catch (DatabaseOperationException | InvalidException e) {
 			request.setAttribute("errorMessage", e.getMessage());
@@ -114,33 +85,30 @@ public class IssueBookServlet extends HttpServlet {
 			return;
 		}
 
-		if (memberId > 0 && bookId > 0 && date != null) {
-			IssueRecord newIssue = new IssueRecord(-1, bookId, memberId, IssueStatus.ISSUED, date, null);
-			try {
-				issueService.addIssue(newIssue);
-				request.setAttribute("successMessage", "Book issued successfully!");
+		IssueRecord newIssue = new IssueRecord(-1, bookId, memberId, IssueStatus.ISSUED, date, null);
+		try {
+			issueService.addIssue(newIssue);
+			request.setAttribute("successMessage", "Book issued successfully!");
 
-				request.setAttribute("memberSelected", null);
-				request.setAttribute("bookSelected", null);
-				request.setAttribute("dateSelected", "");
-				request.setAttribute("memberNameTyped", "");
-				request.setAttribute("book", "");
+			request.setAttribute("memberSelected", null);
+			request.setAttribute("bookSelected", null);
+			request.setAttribute("dateSelected", "");
+			request.setAttribute("memberNameTyped", "");
+			request.setAttribute("book", "");
 
-				List<Book> books = bookService.getBooks().stream().filter(
-						b -> b.getStatus() == BookStatus.ACTIVE && b.getAvailability() == BookAvailability.AVAILABLE)
-						.collect(Collectors.toList());
-				request.setAttribute("booksList", books);
+			List<Book> books = bookService.getBooks().stream().filter(
+					b -> b.getStatus() == BookStatus.ACTIVE && b.getAvailability() == BookAvailability.AVAILABLE)
+					.collect(Collectors.toList());
+			request.setAttribute("booksList", books);
 
-				request.setAttribute("membersList", memberService.getMembers());
+			request.setAttribute("membersList", memberService.getMembers());
 
-				request.getRequestDispatcher("issueBook.jsp").forward(request, response);
-				return;
+			request.getRequestDispatcher("issueBook.jsp").forward(request, response);
+			return;
 
-			} catch (InvalidException | BookNotFoundException | DatabaseOperationException e) {
-				request.setAttribute("errorMessage", e.getMessage());
-			}
-		} else {
-			request.setAttribute("errorMessage", "Select valid Book, Member and Date");
+		} catch (InvalidException | BookNotFoundException | DatabaseOperationException | InvalidIssueDataException
+				| InvalidMemberDataException e) {
+			request.setAttribute("errorMessage", e.getMessage());
 		}
 
 		doGet(request, response);

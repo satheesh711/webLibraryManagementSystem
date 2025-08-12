@@ -12,8 +12,9 @@ import com.webLibraryManagementSystem.dao.IssueRecordDao;
 import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.domain.IssueRecord;
 import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
+import com.webLibraryManagementSystem.exceptions.DatabaseConnectionException;
 import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
-import com.webLibraryManagementSystem.exceptions.InvalidException;
+import com.webLibraryManagementSystem.exceptions.InvalidIssueDataException;
 import com.webLibraryManagementSystem.utilities.BookAvailability;
 import com.webLibraryManagementSystem.utilities.ConnectionPoolingServlet;
 import com.webLibraryManagementSystem.utilities.IssueStatus;
@@ -24,7 +25,8 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 	BookDao bookDaoImpl = new BookDaoImpl();
 
 	@Override
-	public void issueBook(IssueRecord newIssue, Book book) throws InvalidException {
+	public void issueBook(IssueRecord newIssue, Book book)
+			throws DatabaseConnectionException, DatabaseOperationException {
 		Connection con = null;
 		PreparedStatement stmt = null;
 
@@ -48,9 +50,9 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 				con.rollback();
 
 			} catch (SQLException e1) {
-				throw new InvalidException("Issue Book Roll back" + e.getMessage());
+				throw new DatabaseConnectionException("Issue Book Roll back" + e.getMessage());
 			}
-			throw new InvalidException("Issue Book Roll back" + e.getMessage());
+			throw new DatabaseOperationException("Issue Book Roll back" + e.getMessage());
 
 		} finally {
 			try {
@@ -67,7 +69,8 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 	}
 
 	@Override
-	public void returnBook(Book book, int memberId, LocalDate date) throws InvalidException {
+	public void returnBook(Book book, int memberId, LocalDate date)
+			throws DatabaseOperationException, InvalidIssueDataException {
 		Connection con = null;
 		PreparedStatement stmt = null;
 		PreparedStatement stmt1 = null;
@@ -96,11 +99,11 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 				issue = new IssueRecord(issueId, bookId, issueMemberId, status, issueDate, returnDate);
 
 			} else {
-				throw new InvalidException("Issue record Not Found ");
+				throw new InvalidIssueDataException("Issue record Not Found ");
 			}
 
 			if (issue.getIssueDate().isAfter(date)) {
-				throw new InvalidException("return date Must be after Issue Date");
+				throw new InvalidIssueDataException("return date Must be after Issue Date");
 			}
 
 			stmt1 = con.prepareStatement(SQLQueries.ISSUE_UPDATE_RETURN_DATE);
@@ -122,9 +125,9 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 				con.rollback();
 
 			} catch (SQLException e1) {
-				throw new InvalidException("return Book Roll back" + e.getMessage());
+				throw new DatabaseOperationException("return Book Roll back" + e.getMessage());
 			}
-			throw new InvalidException("return Book Roll back" + e.getMessage());
+			throw new DatabaseOperationException("return Book Roll back" + e.getMessage());
 
 		} finally {
 			try {
@@ -141,7 +144,7 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 	}
 
 	@Override
-	public void issueLog(IssueRecord issue, Connection con) throws SQLException {
+	public void issueLog(IssueRecord issue, Connection con) throws DatabaseOperationException {
 		try {
 			PreparedStatement stmt = con.prepareStatement(SQLQueries.ISSUE_LOG_INSERT);
 			stmt.setInt(1, issue.getIssueId());
@@ -155,7 +158,7 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 		} catch (SQLException e) {
 
-			throw new SQLException();
+			throw new DatabaseOperationException(e.getMessage());
 		}
 
 	}

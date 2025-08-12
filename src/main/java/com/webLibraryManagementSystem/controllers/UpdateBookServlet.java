@@ -11,6 +11,7 @@ import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
 import com.webLibraryManagementSystem.exceptions.DuplicateBookException;
 import com.webLibraryManagementSystem.exceptions.InvalidBookDataException;
 import com.webLibraryManagementSystem.services.impl.BookServicesImpl;
+import com.webLibraryManagementSystem.utilities.BookAvailability;
 import com.webLibraryManagementSystem.utilities.BookCategory;
 
 import jakarta.servlet.RequestDispatcher;
@@ -39,8 +40,8 @@ public class UpdateBookServlet extends HttpServlet {
 		if (selectedTitle != null) {
 			try {
 				Book book = bookService.getBooks().stream()
-						.filter(b -> (b.getTitle() + " - " + b.getAuthor()).equals(selectedTitle)).findFirst()
-						.orElse(null);
+						.filter(b -> (b.getTitle() + " - " + b.getAuthor()).equals(selectedTitle))
+						.filter(b -> b.getAvailability().equals(BookAvailability.AVAILABLE)).findFirst().orElse(null);
 				selectedBook = book;
 				if (book != null) {
 
@@ -101,7 +102,8 @@ public class UpdateBookServlet extends HttpServlet {
 
 	public void setAtributes(HttpServletRequest request) {
 		try {
-			List<Book> books = new ArrayList<>(bookService.getBooks());
+			List<Book> books = new ArrayList<>(bookService.getBooks().stream()
+					.filter(b -> b.getAvailability().equals(BookAvailability.AVAILABLE)).toList());
 
 			List<BookCategory> categories = new ArrayList<>(Arrays.asList(BookCategory.values()));
 

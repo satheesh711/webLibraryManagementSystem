@@ -151,13 +151,11 @@ public class BookServicesImpl implements BookServices {
 
 	private void validateBookData(Book book) throws InvalidBookDataException {
 
-		if (!Validations.isValidString(book.getTitle())) {
-			throw new InvalidBookDataException(
-					"Please use only letters, numbers, and allowed punctuation and minimum 3 letters in the title.");
+		if (!Validations.isValidTitle(book.getTitle()) || book.getTitle().trim().length() < 3) {
+			throw new InvalidBookDataException("minimum 3 letters in the title.");
 		}
-		if (!Validations.isValidString(book.getAuthor())) {
-			throw new InvalidBookDataException(
-					"Please use only letters and spaces  and minimum 3 letters for the author's name.");
+		if (!Validations.isValidName(book.getAuthor()) || book.getAuthor().trim().length() < 3) {
+			throw new InvalidBookDataException("3 letters for the author's name.");
 		}
 		if (book.getCategory() == null) {
 			throw new InvalidBookDataException("Please select a category.");

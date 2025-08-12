@@ -19,18 +19,37 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-@WebServlet("/addBook")
-public class AddBookServlet extends HttpServlet {
+@WebServlet("/Book/*")
+public class BookServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	BookServicesImpl bookService = new BookServicesImpl();
 
-	public AddBookServlet() {
+	public BookServlet() {
 		super();
 	}
 
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+
+		String pathInfo = request.getPathInfo();
+		if (pathInfo.equals("/addBook")) {
+			addBookGet(request, response);
+		}
+	}
+
+	@Override
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		String pathInfo = request.getPathInfo();
+		if (pathInfo.equals("/addBook")) {
+			addBookPost(request, response);
+		}
+	}
+
+	private void addBookGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+
 		List<BookCategory> categories = new ArrayList<>(Arrays.asList(BookCategory.values()));
 
 		request.setAttribute("categories", categories);
@@ -39,8 +58,7 @@ public class AddBookServlet extends HttpServlet {
 		dispatcher.forward(request, response);
 	}
 
-	@Override
-	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+	private void addBookPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
 		String bookTitle = request.getParameter("title");
@@ -71,6 +89,7 @@ public class AddBookServlet extends HttpServlet {
 
 		}
 
-		doGet(request, response);
+		addBookGet(request, response);
 	}
+
 }

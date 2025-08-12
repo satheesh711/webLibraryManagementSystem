@@ -17,6 +17,18 @@
 
             hidden.value = selectedOption ? selectedOption.dataset.id : "";
         }
+        
+        function allowOnlyTitle(input) {
+            const pattern = /[^a-zA-Z0-9 :\-.'&/,?!+]/g;
+            
+            input.value = input.value.replace(pattern, '');
+        }
+
+        function allowOnlyMember(input) {
+            const pattern = /[^a-zA-Z ()0-9]/g;
+           
+            input.value = input.value.replace(pattern, '');
+        }
     </script>
 </head>
 <body>
@@ -38,7 +50,7 @@
        placeholder="Search member by name or mobile"
        onchange="setHiddenId('memberInput','members','memberHidden')" autocomplete="off"
        value="${memberNameTyped != null ? memberNameTyped : ''}"
-       required />
+       required oninput="allowOnlyMember(this)"/>
 <datalist id="members">
     <c:forEach var="member" items="${membersList}">
         <option value="${member.name} (${member.mobile})" data-id="${member.memberId}"></option>
@@ -50,7 +62,7 @@
 <label class="input-label">Select Book</label>
 <input list="books" id="bookInput" name="bookTyped"
        placeholder="Search by title or author"
-       onchange="setHiddenId('bookInput','books','bookHidden')" autocomplete="off"
+       onchange="setHiddenId('bookInput','books','bookHidden')" autocomplete="off" oninput="allowOnlyTitle(this)"
        value="${bookTyped != null ? bookTyped : ''}"
        required />
 <datalist id="books">

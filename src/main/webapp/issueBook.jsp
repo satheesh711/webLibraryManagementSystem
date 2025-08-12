@@ -17,6 +17,19 @@
 
             hidden.value = selectedOption ? selectedOption.dataset.id : "";
         }
+        
+        function allowOnlyTitle(input) {
+            const pattern = /[^a-zA-Z0-9 :\-.'&/,?!+]/g;
+            
+            input.value = input.value.replace(pattern, '');
+        }
+
+        function allowOnlyMember(input) {
+            const pattern = /[^a-zA-Z ()0-9]/g;
+           
+            input.value = input.value.replace(pattern, '');
+        }
+
     </script>
 </head>
 <body>
@@ -39,14 +52,14 @@
                        placeholder="Search member by name"
                        onchange="setHiddenId('memberInput','members','memberHiden')" autocomplete="off"
                        value="<c:out value='${memberSelected.name}'/> (<c:out value='${memberSelected.mobile}'/>)"
-                       required />
+                       required oninput="allowOnlyMember(this)" />
             </c:when>
             <c:otherwise>
                 <input list="members" id="memberInput" name="memberNameTyped"
                        placeholder="Search member by name"
                        onchange="setHiddenId('memberInput','members','memberHiden')"
                        value="" autocomplete="off"
-                       required />
+                       required oninput="allowOnlyMember(this)"/>
             </c:otherwise>
         </c:choose>
 
@@ -66,14 +79,14 @@
                        placeholder="Search by title or author"
                        onchange="setHiddenId('bookInput','books','bookHiden')" autocomplete="off"
                        value="<c:out value='${bookSelected.title}'/> - <c:out value='${bookSelected.author}'/>"
-                       required />
+                       required oninput="allowOnlyTitle(this)"/>
             </c:when>
             <c:otherwise>
                 <input list="books" id="bookInput" name="book"
                        placeholder="Search by title or author"
                        onchange="setHiddenId('bookInput','books','bookHiden')"
                        value="" autocomplete="off"
-                       required />
+                       required oninput="allowOnlyTitle(this)"/>
             </c:otherwise>
         </c:choose>
 
