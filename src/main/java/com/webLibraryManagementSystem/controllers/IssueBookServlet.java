@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.domain.IssueRecord;
@@ -17,6 +18,8 @@ import com.webLibraryManagementSystem.services.MemberService;
 import com.webLibraryManagementSystem.services.impl.BookServicesImpl;
 import com.webLibraryManagementSystem.services.impl.IssueServiceImpl;
 import com.webLibraryManagementSystem.services.impl.MemberServiceImpl;
+import com.webLibraryManagementSystem.utilities.BookAvailability;
+import com.webLibraryManagementSystem.utilities.BookStatus;
 import com.webLibraryManagementSystem.utilities.IssueStatus;
 
 import jakarta.servlet.RequestDispatcher;
@@ -41,71 +44,113 @@ public class IssueBookServlet extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
+		String selectedTitle = request.getParameter("book") != null ? request.getParameter("book").trim() : "";
+		String memberNameTyped = request.getParameter("memberNameTyped") != null
+				? request.getParameter("memberNameTyped").trim()
+				: "";
+
 		try {
-			List<Book> books = bookService.getBooks();
+			List<Book> books;
+			if (!selectedTitle.isEmpty()) {
+				books = bookService.getBooks().stream()
+						.filter(b -> b.getTitle().toLowerCase().contains(selectedTitle.toLowerCase())
+								|| b.getAuthor().toLowerCase().contains(selectedTitle.toLowerCase()))
+						.filter(b -> b.getStatus() == BookStatus.ACTIVE
+								&& b.getAvailability() == BookAvailability.AVAILABLE)
+						.collect(Collectors.toList());
+			} else {
+				books = bookService.getBooks().stream().filter(
+						b -> b.getStatus() == BookStatus.ACTIVE && b.getAvailability() == BookAvailability.AVAILABLE)
+						.collect(Collectors.toList());
+			}
 			request.setAttribute("booksList", books);
-			List<Member> members = memberService.getMembers();
+
+			List<Member> members;
+			if (!memberNameTyped.isEmpty()) {
+				members = memberService.getMembers().stream()
+						.filter(m -> m.getName().toLowerCase().contains(memberNameTyped.toLowerCase()))
+						.collect(Collectors.toList());
+			} else {
+				members = memberService.getMembers();
+			}
 			request.setAttribute("membersList", members);
+
+			if (request.getAttribute("successMessage") == null) {
+				Book exactBook = bookService.getBooks().stream()
+						.filter(b -> (b.getTitle() + " - " + b.getAuthor()).equalsIgnoreCase(selectedTitle)).findFirst()
+						.orElse(null);
+				request.setAttribute("bookSelected", exactBook);
+
+				Member exactMember = memberService.getMembers().stream()
+						.filter(m -> (m.getName() + " (" + m.getMobile() + ")").equalsIgnoreCase(memberNameTyped))
+						.findFirst().orElse(null);
+				request.setAttribute("memberSelected", exactMember);
+			}
+
+			request.setAttribute("memberNameTyped", memberNameTyped);
+			request.setAttribute("book", selectedTitle);
+
 		} catch (DatabaseOperationException | InvalidException e) {
 			request.setAttribute("errorMessage", e.getMessage());
 		}
 
 		RequestDispatcher dispatcher = request.getRequestDispatcher("issueBook.jsp");
 		dispatcher.forward(request, response);
-
 	}
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 
-		int memberId;
-		try {
-			memberId = Integer.parseInt(request.getParameter("memberId"));
-		} catch (NumberFormatException e) {
-			memberId = 0;
-		}
-		int bookId;
-		try {
-			bookId = Integer.parseInt(request.getParameter("bookId"));
-		} catch (NumberFormatException e) {
-			bookId = 0;
-		}
+		int memberId = parseId(request.getParameter("memberHiden"));
+		int bookId = parseId(request.getParameter("bookHiden"));
+
 		LocalDate date = null;
 		try {
 			date = LocalDate.parse(request.getParameter("issueDate"));
 		} catch (DateTimeParseException e) {
-			request.setAttribute("errorMessage", "please enter Date dd-mm-yyyy format");
-			request.setAttribute("memberSelected", memberId);
-			request.setAttribute("bookSelected", bookId);
+			request.setAttribute("errorMessage", "Please enter date in yyyy-mm-dd format");
 			doGet(request, response);
 			return;
 		}
 
-		if (memberId != 0 && bookId != 0 && date != null) {
+		if (memberId > 0 && bookId > 0 && date != null) {
 			IssueRecord newIssue = new IssueRecord(-1, bookId, memberId, IssueStatus.ISSUED, date, null);
 			try {
-
 				issueService.addIssue(newIssue);
+				request.setAttribute("successMessage", "Book issued successfully!");
 
-				request.setAttribute("successMessage", "issued successfully");
-				doGet(request, response);
+				request.setAttribute("memberSelected", null);
+				request.setAttribute("bookSelected", null);
+				request.setAttribute("dateSelected", "");
+				request.setAttribute("memberNameTyped", "");
+				request.setAttribute("book", "");
+
+				List<Book> books = bookService.getBooks().stream().filter(
+						b -> b.getStatus() == BookStatus.ACTIVE && b.getAvailability() == BookAvailability.AVAILABLE)
+						.collect(Collectors.toList());
+				request.setAttribute("booksList", books);
+
+				request.setAttribute("membersList", memberService.getMembers());
+
+				request.getRequestDispatcher("issueBook.jsp").forward(request, response);
 				return;
 
 			} catch (InvalidException | BookNotFoundException | DatabaseOperationException e) {
 				request.setAttribute("errorMessage", e.getMessage());
-
 			}
 		} else {
-			request.setAttribute("errorMessage", "Select Book, Member and Date");
-
+			request.setAttribute("errorMessage", "Select valid Book, Member and Date");
 		}
 
-		request.setAttribute("memberSelected", memberId);
-		request.setAttribute("bookSelected", bookId);
-		request.setAttribute("dateSelected", date);
 		doGet(request, response);
-
 	}
 
+	private int parseId(String param) {
+		try {
+			return Integer.parseInt(param);
+		} catch (NumberFormatException e) {
+			return 0;
+		}
+	}
 }

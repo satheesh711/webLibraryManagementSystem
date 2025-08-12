@@ -42,12 +42,10 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 			stmt.executeUpdate();
 			bookDaoImpl.updateBookAvailability(book, BookAvailability.ISSUED, con);
 			con.commit();
-			con.setAutoCommit(true);
 
 		} catch (SQLException | BookNotFoundException | DatabaseOperationException e) {
 			try {
 				con.rollback();
-				con.setAutoCommit(true);
 
 			} catch (SQLException e1) {
 				throw new InvalidException("Issue Book Roll back" + e.getMessage());
@@ -56,8 +54,9 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 		} finally {
 			try {
-				con.close();
 				stmt.close();
+				con.setAutoCommit(true);
+				con.close();
 
 			} catch (SQLException e) {
 				e.printStackTrace();
@@ -117,12 +116,10 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 			bookDaoImpl.updateBookAvailability(book, BookAvailability.AVAILABLE, con);
 
 			con.commit();
-			con.setAutoCommit(true);
 
 		} catch (SQLException | BookNotFoundException | DatabaseOperationException e) {
 			try {
 				con.rollback();
-				con.setAutoCommit(true);
 
 			} catch (SQLException e1) {
 				throw new InvalidException("return Book Roll back" + e.getMessage());
@@ -131,9 +128,10 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 		} finally {
 			try {
-				con.close();
 				stmt.close();
 				stmt1.close();
+				con.setAutoCommit(true);
+				con.close();
 
 			} catch (SQLException e) {
 				e.printStackTrace();

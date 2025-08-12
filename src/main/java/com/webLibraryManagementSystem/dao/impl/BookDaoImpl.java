@@ -191,7 +191,9 @@ public class BookDaoImpl implements BookDao {
 	@Override
 	public void updateBookAvailability(Book book, BookAvailability availability, Connection con)
 			throws BookNotFoundException, DatabaseOperationException {
+		boolean isclose = false;
 		if (con == null) {
+			isclose = true;
 			try {
 				con = ConnectionPoolingServlet.getDataSource().getConnection();
 			} catch (SQLException e) {
@@ -199,7 +201,7 @@ public class BookDaoImpl implements BookDao {
 			}
 		}
 		PreparedStatement stmt = null;
-		PreparedStatement stmt1 = null;
+
 		try {
 
 			stmt = con.prepareStatement(SQLQueries.BOOK_UPDATE_AVAILABILITY);
@@ -207,7 +209,6 @@ public class BookDaoImpl implements BookDao {
 			stmt.setString(1, availability.getDbName());
 			stmt.setInt(2, book.getBookId());
 
-			con.setAutoCommit(false);
 			int rowsUpdated = stmt.executeUpdate();
 
 			if (rowsUpdated <= 0) {
@@ -217,22 +218,17 @@ public class BookDaoImpl implements BookDao {
 			}
 
 			bookLog(book, con);
-			con.commit();
-			con.setAutoCommit(true);
 
 		} catch (SQLException e) {
-			try {
-				con.rollback();
-				con.setAutoCommit(true);
-			} catch (SQLException e1) {
-				throw new DatabaseOperationException("Error updating book availability: " + e.getMessage(), e);
-			}
+
 			throw new DatabaseOperationException("Error updating book availability: " + e.getMessage(), e);
 		} finally {
 			try {
-				con.close();
 				stmt.close();
-				stmt1.close();
+				if (isclose) {
+					con.close();
+				}
+
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

@@ -99,7 +99,7 @@ public class BookServicesImpl implements BookServices {
 			throws BookNotFoundException, DatabaseOperationException {
 		try {
 
-			bookDao.updateBookAvailability(book, avail);
+			bookDao.updateBookAvailability(book, avail, null);
 
 		} catch (DatabaseOperationException | BookNotFoundException e) {
 			throw new DatabaseOperationException(e.getMessage());
