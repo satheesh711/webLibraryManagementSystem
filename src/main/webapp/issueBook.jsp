@@ -5,7 +5,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Issue Book</title>
-    <link rel="stylesheet" type="text/css" href="css/addBook.css">
+    <link rel="stylesheet" type="text/css" href="/webLibraryManagementSystem/css/addBook.css">
     <script>
         function setHiddenId(inputId, listId, hiddenId) {
             const input = document.getElementById(inputId);
@@ -44,7 +44,7 @@
         <c:out value="${successMessage != null ? successMessage : ''}" />
     </label>
 
-    <form action="IssueBookServlet" method="post">
+    <form action="/webLibraryManagementSystem/issue/issueBook" method="post">
         <label class="input-label">Select Member</label>
         <c:choose>
             <c:when test="${memberSelected != null}">

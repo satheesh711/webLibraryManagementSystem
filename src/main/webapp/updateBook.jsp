@@ -7,7 +7,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="css/addBook.css">
+<link rel="stylesheet" href="/webLibraryManagementSystem/css/addBook.css">
 </head>
 <body>
 	<div class="form-container">
@@ -19,12 +19,12 @@
         	</p>
     	</c:if>
     	
-    	 <form action="updateBook" method="post" >
+    	 <form action="/webLibraryManagementSystem/books/updateBook" method="post" >
     	 
     	 	 <label for="book">Book </label>
     	 	 <input list="bookList" id="book" name="book" 
        placeholder="Search by title or author" value="${book}" ${book != null ? 'disabled' : ''}
-       onchange="location.href='updateBook?book=' + this.value" required />
+       onchange="location.href='/webLibraryManagementSystem/books/updateBook?book=' + this.value" required />
 
 		<datalist id="bookList">
 		    <c:forEach var="bookObj" items="${books}">

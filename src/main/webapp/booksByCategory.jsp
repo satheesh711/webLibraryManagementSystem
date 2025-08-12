@@ -6,7 +6,7 @@
 <head>
 <meta charset="UTF-8">
 <title>Insert title here</title>
-<link rel="stylesheet" href="css/table.css">
+<link rel="stylesheet" href="/webLibraryManagementSystem/css/table.css">
 </head>
 <body>
 	<div class="wrapper">

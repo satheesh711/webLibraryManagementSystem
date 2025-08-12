@@ -17,9 +17,9 @@
 				<span class="arrow">▶</span> 📖 Book
 			</div>
 			<div class="submenu" id="bookMenu">
-				<a href="addBook" target="contentFrame">➕ Add Book</a> 
-				<a href="updateBook" target="contentFrame">✏️ Update Book</a>  
-				<a href="viewBooks" target="contentFrame">📘 View All Books</a>
+				<a href="books/addBook" target="contentFrame">➕ Add Book</a> 
+				<a href="books/updateBook" target="contentFrame">✏️ Update Book</a>  
+				<a href="books/viewBooks" target="contentFrame">📘 View All Books</a>
 			</div>
 		</div>
 
@@ -41,8 +41,8 @@
 				<span class="arrow">▶</span> 🔁Issue and Return
 			</div>
 			<div class="submenu" id="issueReturnMenu">
-				<a href="IssueBookServlet" target="contentFrame">📤 Issue Book</a> <a
-					href="ReturnBookServlet" target="contentFrame">📥 Return Book</a>
+				<a href="issue/issueBook" target="contentFrame">📤 Issue Book</a> <a
+					href="issue/returnBook" target="contentFrame">📥 Return Book</a>
 			</div>
 		</div>
 
@@ -51,9 +51,9 @@
 				<span class="arrow">▶</span> 📊 Reports
 			</div>
 			<div class="submenu" id="reportsMenu">
-				<a href="booksByCategory" target="contentFrame">📚 Books by
-					Category</a> <a href="activeMembers" target="contentFrame">✅
-					Active Issue Books</a> <a href="overdueBooks" target="contentFrame">⏰
+				<a href="reports/booksByCategory" target="contentFrame">📚 Books by
+					Category</a> <a href="reports/activeMembers" target="contentFrame">✅
+					Active Issue Books</a> <a href="reports/overdueBooks" target="contentFrame">⏰
 					Overdue Books</a>
 			</div>
 		</div>

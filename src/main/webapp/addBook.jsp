@@ -7,7 +7,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Add Book</title>
-    <link rel="stylesheet" href="css/addBook.css">
+    <link rel="stylesheet" href="/webLibraryManagementSystem/css/addBook.css">
 </head>
 <body>
     <div class="form-container">
@@ -18,7 +18,7 @@
             	${message}
         	</p>
     	</c:if>
-        <form action="addBook" method="post">
+        <form action="/webLibraryManagementSystem/books/addBook" method="post">
     <label for="title">Title</label>
     <input type="text" id="title" name="title"
            required value="${title}"

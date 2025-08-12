@@ -5,7 +5,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" href="css/addBook.css">
+<link rel="stylesheet" href="/webLibraryManagementSystem/css/addBook.css">
 <title>Insert title here</title>
 </head>
 <body>
@@ -17,10 +17,10 @@
             	${message}
         	</p>
     	</c:if>
-    	<form action="updateAvailability" method="post" >
+    	<form action="/webLibraryManagementSystem/books/updateAvailability" method="post" >
     		
     		<label for="book">Book </label>
-    	 	 <select id="book" name="book" required onchange="location.href='updateAvailability?book=' + this.value" >
+    	 	 <select id="book" name="book" required onchange="location.href='/webLibraryManagementSystem/books/updateAvailability?book=' + this.value" >
                 <option value="">Select Book</option>
                 <c:forEach var="bookTitles" items="${books}">
         			<option value="${bookTitles}" ${bookTitles == book ? 'selected' : ''} >${bookTitles}</option>

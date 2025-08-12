@@ -7,13 +7,13 @@
 <head>
 <meta charset="UTF-8">
 <title>View All Books</title>
-<link rel="stylesheet" href="css/table.css">
+<link rel="stylesheet" href="/webLibraryManagementSystem/css/table.css">
 
     <script type="text/javascript">
         function confirmDelete(bookId) {
             var result = window.confirm("Are you sure you want to delete this item?");
             if (result) {
-                 window.location.href="deleteBook?bookId="+bookId;
+                 window.location.href="/webLibraryManagementSystem/books/deleteBook?bookId="+bookId;
             } else {
                  window.alert("Book delete Failed!");
             }
