@@ -1,12 +1,10 @@
 package com.webLibraryManagementSystem.services.impl;
 
 import java.util.List;
-import java.util.Map;
 
 import com.webLibraryManagementSystem.dao.BookDao;
 import com.webLibraryManagementSystem.dao.impl.BookDaoImpl;
 import com.webLibraryManagementSystem.domain.Book;
-import com.webLibraryManagementSystem.domain.CustomActiveIssuedBooks;
 import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
 import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
 import com.webLibraryManagementSystem.exceptions.DuplicateBookException;
@@ -24,9 +22,6 @@ public class BookServicesImpl implements BookServices {
 
 		validateBookData(book);
 
-		if (bookDao.existsByTitleAndAuthor(book.getTitle(), book.getAuthor())) {
-			throw new DuplicateBookException("This book already exists.");
-		}
 		try {
 			bookDao.addBook(book);
 		} catch (DatabaseOperationException e) {
@@ -116,40 +111,8 @@ public class BookServicesImpl implements BookServices {
 		}
 	}
 
-	@Override
-	public Map<String, Integer> getBookCountByCategory() throws DatabaseOperationException {
-
-		try {
-			return bookDao.getBookCountByCategory();
-		} catch (DatabaseOperationException e) {
-			throw new DatabaseOperationException(e.getMessage());
-		}
-
-	}
-
-	@Override
-	public List<CustomActiveIssuedBooks> getActiveIssuedBooks() throws DatabaseOperationException {
-
-		try {
-			return bookDao.getActiveIssuedBooks();
-		} catch (DatabaseOperationException e) {
-			throw new DatabaseOperationException(e.getMessage());
-		}
-
-	}
-
-	@Override
-	public List<CustomActiveIssuedBooks> getOverDueBooks() throws DatabaseOperationException {
-
-		try {
-			return bookDao.getOverDueBooks();
-		} catch (DatabaseOperationException e) {
-			throw new DatabaseOperationException(e.getMessage());
-		}
-
-	}
-
-	private void validateBookData(Book book) throws InvalidBookDataException {
+	private void validateBookData(Book book)
+			throws InvalidBookDataException, DuplicateBookException, DatabaseOperationException {
 
 		if (!Validations.isValidTitle(book.getTitle()) || book.getTitle().trim().length() < 3) {
 			throw new InvalidBookDataException("minimum 3 letters in the title.");
@@ -160,5 +123,10 @@ public class BookServicesImpl implements BookServices {
 		if (book.getCategory() == null) {
 			throw new InvalidBookDataException("Please select a category.");
 		}
+
+		if (bookDao.existsByTitleAndAuthor(book.getTitle(), book.getAuthor())) {
+			throw new DuplicateBookException("This book already exists.");
+		}
 	}
+
 }

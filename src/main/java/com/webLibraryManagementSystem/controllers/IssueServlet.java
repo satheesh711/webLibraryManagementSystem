@@ -6,6 +6,8 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.webLibraryManagementSystem.dao.ReportsDao;
+import com.webLibraryManagementSystem.dao.impl.ReportsDaoImpl;
 import com.webLibraryManagementSystem.domain.Book;
 import com.webLibraryManagementSystem.domain.IssueRecord;
 import com.webLibraryManagementSystem.domain.Member;
@@ -37,6 +39,7 @@ public class IssueServlet extends HttpServlet {
 	MemberService memberService = new MemberServiceImpl();
 	BookServices bookService = new BookServicesImpl();
 	IssueService issueService = new IssueServiceImpl();
+	private final ReportsDao reportsService = new ReportsDaoImpl();
 
 	public IssueServlet() {
 		super();
@@ -230,7 +233,7 @@ public class IssueServlet extends HttpServlet {
 		}
 
 		try {
-			List<Integer> issuedMemberIds = bookService.getActiveIssuedBooks().stream().map(i -> i.getMemberId())
+			List<Integer> issuedMemberIds = reportsService.getActiveIssuedBooks().stream().map(i -> i.getMemberId())
 					.collect(Collectors.toList());
 
 			List<Member> members = memberService.getMembers().stream()

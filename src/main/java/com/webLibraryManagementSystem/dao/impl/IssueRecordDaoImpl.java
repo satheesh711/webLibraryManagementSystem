@@ -131,8 +131,7 @@ public class IssueRecordDaoImpl implements IssueRecordDao {
 
 		} finally {
 			try {
-				stmt.close();
-				stmt1.close();
+
 				con.setAutoCommit(true);
 				con.close();
 

@@ -3,10 +3,8 @@ package com.webLibraryManagementSystem.dao;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.List;
-import java.util.Map;
 
 import com.webLibraryManagementSystem.domain.Book;
-import com.webLibraryManagementSystem.domain.CustomActiveIssuedBooks;
 import com.webLibraryManagementSystem.exceptions.BookNotFoundException;
 import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
 import com.webLibraryManagementSystem.utilities.BookAvailability;
@@ -26,12 +24,6 @@ public interface BookDao {
 	boolean existsByTitleAndAuthor(String title, String author) throws DatabaseOperationException;
 
 	void bookLog(Book book, Connection con) throws SQLException;
-
-	Map<String, Integer> getBookCountByCategory() throws DatabaseOperationException;
-
-	List<CustomActiveIssuedBooks> getActiveIssuedBooks() throws DatabaseOperationException;
-
-	List<CustomActiveIssuedBooks> getOverDueBooks() throws DatabaseOperationException;
 
 	List<Book> getAllBooks() throws DatabaseOperationException;
 

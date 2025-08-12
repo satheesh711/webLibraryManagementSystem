@@ -4,9 +4,10 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import com.webLibraryManagementSystem.dao.ReportsDao;
+import com.webLibraryManagementSystem.dao.impl.ReportsDaoImpl;
 import com.webLibraryManagementSystem.domain.CustomActiveIssuedBooks;
 import com.webLibraryManagementSystem.exceptions.DatabaseOperationException;
-import com.webLibraryManagementSystem.services.impl.BookServicesImpl;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -18,7 +19,8 @@ import jakarta.servlet.http.HttpServletResponse;
 @WebServlet("/reports/*")
 public class Reports extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	BookServicesImpl bookService = new BookServicesImpl();
+
+	private final ReportsDao reportsService = new ReportsDaoImpl();
 
 	public Reports() {
 		super();
@@ -53,7 +55,7 @@ public class Reports extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 
-			List<CustomActiveIssuedBooks> books = bookService.getActiveIssuedBooks();
+			List<CustomActiveIssuedBooks> books = reportsService.getActiveIssuedBooks();
 			request.setAttribute("activeIssueBooks", books);
 
 		} catch (DatabaseOperationException e) {
@@ -67,7 +69,7 @@ public class Reports extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 
-			Map<String, Integer> books = bookService.getBookCountByCategory();
+			Map<String, Integer> books = reportsService.getBookCountByCategory();
 			request.setAttribute("books", books);
 
 		} catch (DatabaseOperationException e) {
@@ -82,7 +84,7 @@ public class Reports extends HttpServlet {
 
 		try {
 
-			List<CustomActiveIssuedBooks> books = bookService.getOverDueBooks();
+			List<CustomActiveIssuedBooks> books = reportsService.getOverDueBooks();
 			request.setAttribute("overDueBooks", books);
 
 		} catch (DatabaseOperationException e) {

@@ -297,7 +297,7 @@ public class BookServlet extends HttpServlet {
 			request.setAttribute("message", e.getMessage());
 		}
 
-		RequestDispatcher dispatcher = request.getRequestDispatcher("/viewBooks");
+		RequestDispatcher dispatcher = request.getRequestDispatcher("/books/viewBooks");
 		dispatcher.forward(request, response);
 
 	}
